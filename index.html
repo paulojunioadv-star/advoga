@@ -653,17 +653,19 @@ async function inicializarPlanilhaMestre(){
   const cr=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets',{method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({properties:{title:'Advoga Master Acessos'},sheets:[{properties:{title:'Usuários'}}]})})).json();
   MASTER_SHEET_ID=cr.spreadsheetId;
   localStorage.setItem(LS_MASTER,MASTER_SHEET_ID);
-  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usuários!A1?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['email','status','plano','nome','data_acesso'],[ADMIN_EMAIL,'ativo','admin','Paulo Júnio',new Date().toLocaleDateString('pt-BR')]]})});
+  const abaEncInit=encodeURIComponent('Usuários');
+  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/'+abaEncInit+'!A1?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['email','status','plano','nome','data_acesso'],[ADMIN_EMAIL,'ativo','admin','Paulo Júnio',new Date().toLocaleDateString('pt-BR')]]})});
 }
 
 async function verificarAcesso(email){
-  const mid=MASTER_SHEET_ID||localStorage.getItem(LS_MASTER); if(!mid)return false;
+  const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID||localStorage.getItem(LS_MASTER); if(!mid)return false;
   try{
-    const d=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/Usuários!A:C',{headers:{Authorization:'Bearer '+gToken}})).json();
+    const abaEnc=encodeURIComponent('Usuários');
+    const d=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/'+abaEnc+'!A:C',{headers:{Authorization:'Bearer '+gToken}})).json();
     if(!d.values||d.values.length<2)return false;
     const row=d.values.slice(1).find(r=>r[0]&&r[0].toLowerCase()===email.toLowerCase());
     return row&&row[1]&&row[1].toLowerCase()==='ativo';
-  }catch(e){return false;}
+  }catch(e){console.warn('verificarAcesso erro:',e);return false;}
 }
 
 async function entrarApp(comGoogle){
@@ -1101,9 +1103,12 @@ async function saveModal(){
     const email=g('nu-email')?.value.trim(); const nome=g('nu-nome')?.value.trim()||''; const plano=g('nu-plano')?.value||'básico';
     if(!email){toast('E-mail é obrigatório.','err');return;}
     try{
-      const r=await sheetsReq('GET','/'+MASTER_SHEET_ID+'/values/Usuários!A:A');
+      // BUG FIX: nome da aba com acento precisa de encodeURIComponent na URL
+      const abaEnc=encodeURIComponent('Usuários');
+      const r=await sheetsReq('GET','/'+MASTER_SHEET_ID+'/values/'+abaEnc+'!A:A');
       const prox=(r.values?.length||1)+1;
-      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usuários!A'+prox+':E'+prox+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[email,'ativo',plano,nome,new Date().toLocaleDateString('pt-BR')]]})});
+      const resp=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/'+abaEnc+'!A'+prox+':E'+prox+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[email,'ativo',plano,nome,new Date().toLocaleDateString('pt-BR')]]})});
+      if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||'Erro '+resp.status); }
       closeModal(); toast('Usuário '+email+' adicionado!','ok'); await carregarUsuarios();
     }catch(e){toast('Erro: '+e.message,'err');}
     return;
@@ -1442,10 +1447,12 @@ async function renderAcessos(){
 }
 async function carregarUsuarios(){
   const tbody=g('acessos-body'); if(!tbody)return;
-  if(!MASTER_SHEET_ID){tbody.innerHTML=emptyRow(6,'alert-circle','Conecte o Google para gerenciar acessos.');return;}
+  const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
+  if(!mid){tbody.innerHTML=emptyRow(6,'alert-circle','Conecte o Google para gerenciar acessos.');return;}
   tbody.innerHTML=emptyRow(6,'loader','Carregando...');
   try{
-    const d=await sheetsReq('GET','/'+MASTER_SHEET_ID+'/values/Usuários!A:E');
+    const abaEnc=encodeURIComponent('Usuários');
+    const d=await sheetsReq('GET','/'+mid+'/values/'+abaEnc+'!A:E');
     if(!d.values||d.values.length<2){tbody.innerHTML=emptyRow(6,'users','Nenhum usuário cadastrado.');return;}
     tbody.innerHTML=d.values.slice(1).map((row,i)=>{
       const [email,status,plano,nome,data]=[row[0]||'',row[1]||'',row[2]||'',row[3]||'',row[4]||''];
@@ -1456,12 +1463,16 @@ async function carregarUsuarios(){
 }
 async function alterarStatusUsuario(linha,novoStatus,email){
   if(!confirm((novoStatus==='bloqueado'?'Bloquear':'Liberar')+' acesso de '+email+'?'))return;
-  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usuários!B'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[novoStatus]]})});
+  const abaEnc=encodeURIComponent('Usuários');
+  const resp=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/'+abaEnc+'!B'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[novoStatus]]})});
+  if(!resp.ok){ const e=await resp.json().catch(()=>({})); toast('Erro: '+((e.error&&e.error.message)||resp.status),'err'); return; }
   toast(novoStatus==='ativo'?'Acesso liberado!':'Acesso bloqueado!','ok'); await carregarUsuarios();
 }
 async function removerUsuario(linha,email){
   if(!confirm('Remover '+email+' permanentemente?'))return;
-  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usuários!A'+linha+':E'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['','','','','']]})});
+  const abaEnc=encodeURIComponent('Usuários');
+  const resp=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/'+abaEnc+'!A'+linha+':E'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['','','','','']]})});
+  if(!resp.ok){ const e=await resp.json().catch(()=>({})); toast('Erro: '+((e.error&&e.error.message)||resp.status),'err'); return; }
   toast('Usuário removido.','ok'); await carregarUsuarios();
 }
 function abrirModalNovoUsuario(){
@@ -1483,11 +1494,10 @@ function copiarLink(){
   const tokenExp=parseInt(localStorage.getItem(LS_TEXP)||'0');
   const tokenValido=tokenExp>Date.now();
 
-  if(savedUser&&tokenValido){
-    // Token ainda válido — entrar com dados locais, sem novo OAuth
+  if(savedUser){
     gUser=savedUser;
     sheetId=savedSheet||'';
-    MASTER_SHEET_ID=localStorage.getItem(LS_MASTER)||'';
+    MASTER_SHEET_ID=MASTER_SHEET_FIXED||localStorage.getItem(LS_MASTER)||'';
     if(ADMINS.includes(gUser.toLowerCase()))
       g('nav-acessos').style.display='flex';
     g('login-screen').style.display='none';
@@ -1495,7 +1505,36 @@ function copiarLink(){
     carregarConfig(); carregarLocal(); renderAll(); atualizarPills();
     const d=new Date(); const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
     const el=g('today-date'); if(el)el.textContent=d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear();
-    setTimeout(()=>toast('Sessão restaurada. Clique em "Drive" para sincronizar.','info'),600);
+
+    if(tokenValido){
+      // Token ainda em cache — sincronizar silenciosamente em background
+      setTimeout(()=>toast('Sessão restaurada. Sincronizando...','info'),400);
+    } else {
+      // Token expirado — pedir novo token silenciosamente (sem popup)
+      setTimeout(()=>{
+        try{
+          const client=google.accounts.oauth2.initTokenClient({
+            client_id:CLIENT_ID,
+            scope:'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email',
+            prompt:'',  // sem popup de seleção de conta
+            hint: savedUser, // sugere a conta já usada
+            callback:async(r)=>{
+              if(r.error||!r.access_token){ toast('Sessão restaurada (offline). Faça login para sincronizar.','info'); return; }
+              gToken=r.access_token;
+              localStorage.setItem(LS_TEXP, Date.now()+(r.expires_in||3600)*1000);
+              atualizarPills();
+              try{
+                showLoading('Sincronizando dados...');
+                await initSheets(); await carregarDados();
+                toast('Dados sincronizados!','ok');
+              }catch(e){ carregarLocal(); renderAll(); toast('Usando dados locais.','info'); }
+              finally{ hideLoading(); }
+            }
+          });
+          client.requestAccessToken();
+        }catch(e){ toast('Sessão restaurada (offline). Faça login para sincronizar.','info'); }
+      }, 800);
+    }
   }
 })();
 </script>
