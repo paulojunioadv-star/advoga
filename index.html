@@ -263,6 +263,23 @@ tr:hover td{background:var(--bg3)}
 .kb-add-col:hover{border-color:var(--blue)}
 @media(max-width:600px){.kb-col{min-width:180px;max-width:180px}}
 
+
+/* ══ CNJ / BRASILAPI ══ */
+.api-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-top:8px;font-size:12px}
+.api-box-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.api-result{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-top:8px;font-size:12px;display:none}
+.api-result.show{display:block}
+.api-mov{border-left:3px solid var(--blue);padding:6px 10px;margin-bottom:6px;background:var(--blue-bg);border-radius:0 var(--r) var(--r) 0;font-size:11px;line-height:1.4}
+.api-mov-data{font-size:10px;color:var(--text3);margin-bottom:2px}
+.api-mov-txt{color:var(--text)}
+.api-loading{display:flex;align-items:center;gap:8px;color:var(--text3);font-size:12px;padding:8px 0}
+.api-loading i{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cnpj-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.cnpj-field{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:6px 10px}
+.cnpj-field label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);display:block;margin-bottom:2px}
+.cnpj-field span{font-size:12px;font-weight:500;color:var(--text)}
+
 /* DASH CHARTS */
 .dchart{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 @media(max-width:640px){.dchart{grid-template-columns:1fr}}
@@ -1506,19 +1523,29 @@ const modalForms={
   cliente:()=>{
     const c=mEditId?db.clientes.find(x=>x.id===mEditId):{};
     const areas=['Previdenciário','Família','Trabalhista','Cível','Criminal','Tributário','Empresarial','Consumidor','Imobiliário','Outro'];
-    return `<div class="fgrid"><div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="f0" value="${c.nome||''}"></div><div class="fg"><label class="fl">CPF</label><input class="fi" id="f1" value="${c.cpf||''}"></div></div>
+    return `
+    <div class="api-box" style="margin-bottom:10px;margin-top:0">
+      <div class="api-box-title"><i class="ti ti-building"></i> Pessoa Jurídica? Preencha pelo CNPJ</div>
+      <div style="display:flex;gap:6px"><input class="fi" id="cnpj-input" placeholder="00.000.000/0001-00" style="flex:1" oninput="cnpj_clearResult()">
+      <button type="button" class="btn btn-p" onclick="cnpj_consultar()" style="white-space:nowrap;padding:0 12px"><i class="ti ti-search"></i> Buscar CNPJ</button></div>
+      <div id="cnpj-result"></div>
+    </div>
+    <div class="fgrid"><div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="f0" value="${c.nome||''}"></div><div class="fg"><label class="fl">CPF <span style="color:var(--text3);font-size:9px">(validação automática)</span></label><input class="fi" id="f1" value="${c.cpf||''}" onblur="validarCPF(this)"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Data de nascimento</label><input class="fi" type="date" id="f2" value="${c.nascimento||''}"></div><div class="fg"><label class="fl">RG</label><input class="fi" id="f3" value="${c.rg||''}"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Telefone/WhatsApp</label><input class="fi" id="f4" value="${c.telefone||''}"></div><div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="f5" value="${c.email||''}"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Profissão</label><input class="fi" id="f6" value="${c.profissao||''}"></div><div class="fg"><label class="fl">Estado civil</label><select class="fi" id="f7">${['solteiro(a)','casado(a)','divorciado(a)','viúvo(a)'].map(v=>`<option ${c.estadoCivil===v?'selected':''}>${v}</option>`).join('')}</select></div></div>
     <div class="fg"><label class="fl">Rua, número</label><input class="fi" id="f8" value="${c.rua||''}"></div>
-    <div class="fgrid"><div class="fg"><label class="fl">Bairro</label><input class="fi" id="f9" value="${c.bairro||''}"></div><div class="fg"><label class="fl">CEP</label><input class="fi" id="f10" value="${c.cep||''}"></div></div>
-    <div class="fgrid"><div class="fg"><label class="fl">Cidade</label><input class="fi" id="f11" value="${c.cidade||''}"></div><div class="fg"><label class="fl">UF</label><input class="fi" id="f12" value="${c.estado||'GO'}"></div></div>
+    <div class="fgrid"><div class="fg"><label class="fl">Bairro</label><input class="fi" id="f9" value="${c.bairro||''}"></div><div class="fg"><label class="fl">CEP <span style="color:var(--blue-text);font-size:9px">(preenchimento automático)</span></label><input class="fi" id="f10" value="${c.cep||''}" placeholder="00000-000" onblur="buscarCEP(this.value)" oninput="this.value=this.value.replace(/[^\\d-]/g,'').slice(0,9)"></div></div>
+    <div class="fgrid"><div class="fg"><label class="fl">Cidade</label><input class="fi" id="f11" value="${c.cidade||''}"></div><div class="fg"><label class="fl">UF</label><select class="fi" id="f12">${['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'].map(uf=>`<option ${(c.estado||'GO')===uf?'selected':''}>${uf}</option>`).join('')}</select></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Área do direito</label><select class="fi" id="f13">${areas.map(a=>`<option ${c.area===a?'selected':''}>${a}</option>`).join('')}</select></div><div class="fg"><label class="fl">Status</label><select class="fi" id="f14"><option ${c.status==='ativo'||!c.status?'selected':''}>ativo</option><option ${c.status==='inativo'?'selected':''}>inativo</option></select></div></div>
     <div class="fg"><label class="fl">Observações</label><textarea class="fi" id="f15" rows="2">${c.obs||''}</textarea></div>`;
   },
   processo:()=>{
     const p=mEditId?db.processos.find(x=>x.id===mEditId):{};
-    return `<div class="fg"><label class="fl">Número do processo</label><input class="fi" id="f0" placeholder="0000000-00.0000.0.00.0000" value="${p.numero||''}"></div>
+    return `<div class="fg"><label class="fl">Número do processo</label>
+    <div style="display:flex;gap:6px"><input class="fi" id="f0" placeholder="0000000-00.0000.0.00.0000" value="${p.numero||''}" style="flex:1" oninput="cnj_clearResult()">
+    <button type="button" class="btn btn-p" onclick="cnj_consultar()" style="white-space:nowrap;padding:0 12px"><i class="ti ti-search"></i> Consultar CNJ</button></div>
+    <div id="cnj-result"></div></div>
     <div class="fg"><label class="fl">Assunto *</label><input class="fi" id="f1" value="${p.assunto||''}"></div>
     <div class="fgrid"><div class="fg"><label class="fl">Cliente</label><select class="fi" id="f2"><option value="">—</option>${db.clientes.map(c=>`<option ${p.cliente===c.nome?'selected':''}>${c.nome}</option>`).join('')}</select></div><div class="fg"><label class="fl">Vara/Juízo</label><input class="fi" id="f3" value="${p.vara||''}"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Status</label><select class="fi" id="f4"><option ${p.status==='andamento'||!p.status?'selected':''}>andamento</option><option ${p.status==='encerrado'?'selected':''}>encerrado</option><option ${p.status==='arquivado'?'selected':''}>arquivado</option></select></div><div class="fg"><label class="fl">Próximo prazo</label><input class="fi" type="date" id="f6" value="${p.prazo||''}"></div></div>
@@ -1878,6 +1905,193 @@ async function unirPDFs(){
     }else throw new Error(pd.error||'Erro ao unir PDFs.');
   }catch(e){toast('Erro: '+e.message,'err');}
   finally{hideLoading();}
+}
+
+
+// ══════════════════════════════════════════════
+// CNJ DATAJUD — Consulta Processual Gratuita
+// ══════════════════════════════════════════════
+
+// Tribunais suportados pelo DataJud (principais)
+const CNJ_TRIBUNAIS={
+  '8.26':'tjsp','8.19':'tjrj','8.13':'tjmg','8.21':'tjrs','8.07':'tjdf',
+  '8.08':'tjes','8.09':'tjgo','8.10':'tjma','8.11':'tjmt','8.12':'tjms',
+  '8.14':'tjpa','8.15':'tjpb','8.16':'tjpr','8.17':'tjpe','8.18':'tjpi',
+  '8.20':'tjrn','8.22':'tjro','8.23':'tjrr','8.24':'tjsc','8.25':'tjse',
+  '8.27':'tjto','8.02':'trf1','8.03':'trf2','8.04':'trf3','8.05':'trf4','8.06':'trf5',
+  '5.01':'trt1','5.02':'trt2','5.03':'trt3','5.04':'trt4','5.18':'trt18',
+};
+
+function cnj_clearResult(){ const el=g('cnj-result'); if(el)el.innerHTML=''; }
+
+async function cnj_consultar(){
+  const numEl=g('f0'); if(!numEl)return;
+  const numero=numEl.value.replace(/[^\d]/g,'');
+  if(numero.length!==20){toast('Número do processo deve ter 20 dígitos (formato CNJ).','err');return;}
+
+  const el=g('cnj-result'); if(!el)return;
+  el.innerHTML=`<div class="api-loading"><i class="ti ti-loader"></i> Consultando CNJ DataJud...</div>`;
+  el.classList.add('show');
+
+  // Identifica tribunal pelo dígito 15-16 (OOOO = órgão)
+  const segmento=numero.slice(13,14); // J.TT
+  const tribunal_cod=segmento+'.'+numero.slice(14,16).replace(/^0+/,'');
+
+  // Tenta descobrir tribunal pelo número formatado
+  // Formato: NNNNNNN-DD.AAAA.J.TT.OOOO
+  const J=numero[13]; // segmento de justiça
+  const TT=numero.slice(14,16); // tribunal
+  const key=J+'.'+parseInt(TT,10);
+  const sigla=CNJ_TRIBUNAIS[key]||'';
+
+  if(!sigla){
+    el.innerHTML=`<div class="api-result show" style="color:var(--amber-text)">
+      <i class="ti ti-info-circle"></i> Tribunal não identificado automaticamente.<br>
+      <small>Código J.TT: ${key} — consulte diretamente no site do tribunal.</small>
+    </div>`;
+    return;
+  }
+
+  try{
+    // DataJud API - pública, sem autenticação
+    const url=`https://api-publica.datajud.cnj.jus.br/api_publica_${sigla}/_search`;
+    const body={query:{match:{"numeroProcesso":numero}},size:1,_source:["numeroProcesso","classe","assuntos","orgaoJulgador","movimentos","dataAjuizamento"]};
+
+    const r=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    if(!r.ok)throw new Error('Tribunal '+sigla.toUpperCase()+' retornou erro '+r.status);
+    const d=await r.json();
+    const hits=d?.hits?.hits||[];
+
+    if(!hits.length){
+      el.innerHTML=`<div class="api-result show" style="color:var(--amber-text)">
+        <i class="ti ti-search-off"></i> Processo não encontrado no ${sigla.toUpperCase()}.<br>
+        <small>Verifique o número ou tente pelo site do tribunal.</small>
+      </div>`;
+      return;
+    }
+
+    const proc=hits[0]._source;
+    const movs=(proc.movimentos||[]).slice(0,5); // últimas 5 movimentações
+    const classe=proc.classe?.nome||'—';
+    const orgao=proc.orgaoJulgador?.nome||'—';
+    const assuntos=(proc.assuntos||[]).map(a=>a.nome).join(', ')||'—';
+    const ajuiz=proc.dataAjuizamento?new Date(proc.dataAjuizamento).toLocaleDateString('pt-BR'):'—';
+
+    // Preenche campos do formulário automaticamente
+    if(g('f1')&&!g('f1').value) g('f1').value=assuntos.slice(0,80);
+    if(g('f3')&&!g('f3').value) g('f3').value=orgao;
+
+    el.innerHTML=`<div class="api-result show">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <i class="ti ti-circle-check" style="color:var(--green);font-size:16px"></i>
+        <strong style="color:var(--green)">Processo encontrado no ${sigla.toUpperCase()}</strong>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:11px">
+        <div><span style="color:var(--text3)">Classe:</span> <strong>${he(classe)}</strong></div>
+        <div><span style="color:var(--text3)">Ajuizado:</span> <strong>${ajuiz}</strong></div>
+        <div style="grid-column:span 2"><span style="color:var(--text3)">Órgão:</span> <strong>${he(orgao)}</strong></div>
+        <div style="grid-column:span 2"><span style="color:var(--text3)">Assuntos:</span> ${he(assuntos)}</div>
+      </div>
+      ${movs.length?`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:6px">Últimas movimentações</div>
+      ${movs.map(m=>`<div class="api-mov">
+        <div class="api-mov-data">${m.dataHora?new Date(m.dataHora).toLocaleDateString('pt-BR'):''}</div>
+        <div class="api-mov-txt">${he(m.nome||m.complementosTabelados?.[0]?.nome||'Movimentação')}</div>
+      </div>`).join('')}`:''}
+    </div>`;
+
+    toast('Processo encontrado no CNJ! ✓','ok');
+  }catch(e){
+    el.innerHTML=`<div class="api-result show" style="color:var(--red-text)">
+      <i class="ti ti-wifi-off"></i> Erro ao consultar: ${he(e.message)}<br>
+      <small>Verifique sua conexão ou consulte diretamente no DataJud.</small>
+    </div>`;
+  }
+}
+
+// ══════════════════════════════════════════════
+// BRASILAPI — Consulta CNPJ Gratuita
+// ══════════════════════════════════════════════
+
+function cnpj_clearResult(){ const el=g('cnpj-result'); if(el)el.innerHTML=''; }
+
+async function cnpj_consultar(){
+  const inputEl=g('cnpj-input'); if(!inputEl)return;
+  const cnpj=inputEl.value.replace(/[^\d]/g,'');
+  if(cnpj.length!==14){toast('CNPJ deve ter 14 dígitos.','err');return;}
+
+  const el=g('cnpj-result'); if(!el)return;
+  el.innerHTML=`<div class="api-loading"><i class="ti ti-loader"></i> Consultando Receita Federal...</div>`;
+  el.classList.add('show');
+
+  try{
+    const r=await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+    if(!r.ok)throw new Error('CNPJ não encontrado ou inválido.');
+    const d=await r.json();
+
+    // Preenche formulário automaticamente
+    if(g('f0')) g('f0').value=d.razao_social||d.nome_fantasia||'';
+    if(g('f4')) g('f4').value=(d.ddd_telefone_1||'').replace(/[^\d]/g,'')||g('f4').value;
+    if(g('f6')) g('f6').value=d.cnae_fiscal_descricao||'';
+    // Endereço
+    if(g('f8')) g('f8').value=(d.logradouro||'')+(d.numero?' '+d.numero:'')||g('f8').value;
+    if(g('f9')) g('f9').value=d.bairro||g('f9').value;
+    if(g('f10')){ g('f10').value=d.cep||''; }
+    if(g('f11')) g('f11').value=d.municipio||g('f11').value;
+    if(g('f12')) g('f12').value=d.uf||g('f12').value;
+
+    const sit=d.descricao_situacao_cadastral||'—';
+    const sitCor=sit.toLowerCase().includes('ativa')?'var(--green)':'var(--amber)';
+
+    el.innerHTML=`<div class="api-result show">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <i class="ti ti-building-store" style="color:var(--green);font-size:16px"></i>
+        <strong style="color:var(--green)">CNPJ encontrado — dados preenchidos!</strong>
+      </div>
+      <div class="cnpj-grid">
+        <div class="cnpj-field"><label>Razão Social</label><span>${he(d.razao_social||'—')}</span></div>
+        <div class="cnpj-field"><label>Nome Fantasia</label><span>${he(d.nome_fantasia||'—')}</span></div>
+        <div class="cnpj-field"><label>Situação</label><span style="color:${sitCor};font-weight:700">${he(sit)}</span></div>
+        <div class="cnpj-field"><label>Abertura</label><span>${d.data_inicio_atividade?new Date(d.data_inicio_atividade+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</span></div>
+        <div class="cnpj-field" style="grid-column:span 2"><label>CNAE Principal</label><span>${he(d.cnae_fiscal_descricao||'—')}</span></div>
+      </div>
+      ${(d.qsa||[]).length?`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin:8px 0 4px">Quadro societário</div>
+      ${d.qsa.slice(0,3).map(s=>`<div class="api-mov"><div class="api-mov-data">${he(s.qualificacao_socio||'Sócio')}</div><div class="api-mov-txt">${he(s.nome_socio||'—')}</div></div>`).join('')}`:''}
+    </div>`;
+
+    toast('CNPJ consultado! Dados preenchidos ✓','ok');
+  }catch(e){
+    el.innerHTML=`<div class="api-result show" style="color:var(--red-text)">
+      <i class="ti ti-x"></i> ${he(e.message)}
+    </div>`;
+  }
+}
+
+// ══════════════════════════════════════════════
+// VALIDAÇÃO DE CPF (sem API — cálculo local)
+// ══════════════════════════════════════════════
+function validarCPF(input){
+  const v=input.value.replace(/[^\d]/g,'');
+  if(!v||v.length!==11){ input.style.borderColor=''; return; }
+  // Verifica dígitos iguais (ex: 111.111.111-11)
+  if(/^(\d)\1+$/.test(v)){ input.style.borderColor='var(--red)'; toast('CPF inválido.','err'); return; }
+  // Calcula dígitos verificadores
+  let s=0;
+  for(let i=0;i<9;i++) s+=parseInt(v[i])*(10-i);
+  let r=s%11; const d1=r<2?0:11-r;
+  s=0;
+  for(let i=0;i<10;i++) s+=parseInt(v[i])*(11-i);
+  r=s%11; const d2=r<2?0:11-r;
+  if(d1===parseInt(v[9])&&d2===parseInt(v[10])){
+    input.style.borderColor='var(--green)';
+  } else {
+    input.style.borderColor='var(--red)';
+    toast('CPF inválido — verifique o número.','err');
+  }
 }
 
 // ══ ACESSOS ══
