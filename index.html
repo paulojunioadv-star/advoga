@@ -751,7 +751,7 @@ async function initSheets(){
     const cr=await sheetsReq('POST','',{properties:{title:'Advoga CRM'},sheets:abas.map(t=>({properties:{title:t}}))});
     sheetId=cr.spreadsheetId;
     for(const [aba,keys] of Object.entries(ABA_KEYS)){
-      await sheetsReq('PUT','/'+sheetId+'/values/'+aba+'!A1?valueInputOption=RAW',{values:[keys]});
+      await sheetsReq('PUT','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1?valueInputOption=RAW',{values:[keys]});
     }
   }
   localStorage.setItem(LS_SHEET,sheetId);
@@ -768,17 +768,17 @@ async function garantirAbas(abas){
     if(faltando.length){
       await sheetsReq('POST','/'+sheetId+':batchUpdate',{requests:faltando.map(a=>({addSheet:{properties:{title:a}}}))});
       for(const aba of faltando){
-        await sheetsReq('PUT','/'+sheetId+'/values/'+aba+'!A1?valueInputOption=RAW',{values:[ABA_KEYS[aba]]});
+        await sheetsReq('PUT','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1?valueInputOption=RAW',{values:[ABA_KEYS[aba]]});
       }
     }
     for(const aba of abas){
       if(faltando.includes(aba))continue;
       const hdrEsperado=ABA_KEYS[aba];
-      const r=await sheetsReq('GET','/'+sheetId+'/values/'+aba+'!A1:Z1');
+      const r=await sheetsReq('GET','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1:Z1');
       const hdrAtual=(r.values&&r.values[0])||[];
       const novos=hdrEsperado.filter(h=>!hdrAtual.includes(h));
       if(novos.length){
-        await sheetsReq('PUT','/'+sheetId+'/values/'+aba+'!A1?valueInputOption=RAW',{values:[[...hdrAtual,...novos]]});
+        await sheetsReq('PUT','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1?valueInputOption=RAW',{values:[[...hdrAtual,...novos]]});
       }
     }
   }catch(e){/* não bloqueia o carregamento */}
@@ -786,7 +786,7 @@ async function garantirAbas(abas){
 
 async function carregarDados(){
   for(const aba of Object.keys(ABA_KEYS)){
-    const r=await sheetsReq('GET','/'+sheetId+'/values/'+aba+'!A1:Z1000');
+    const r=await sheetsReq('GET','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1:Z1000');
     const rows=r.values||[];
     if(rows.length>1){
       const hdr=(rows[0]&&rows[0].length)?rows[0]:ABA_KEYS[aba];
@@ -802,7 +802,7 @@ async function carregarDados(){
 async function salvarAba(aba,dados){
   if(!sheetId||!gToken)return;
   const hdr=ABA_KEYS[aba];
-  await sheetsReq('PUT','/'+sheetId+'/values/'+aba+'!A1?valueInputOption=RAW',{values:[hdr,...dados.map(d=>hdr.map(h=>d[h]||''))]});
+  await sheetsReq('PUT','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1?valueInputOption=RAW',{values:[hdr,...dados.map(d=>hdr.map(h=>d[h]||''))]});
 }
 
 async function salvarClientes()  { await salvarAba('Clientes',  db.clientes); }
