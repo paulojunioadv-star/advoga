@@ -737,11 +737,14 @@ async function initSheets(){
   if(saved){
     try{
       const c=await sheetsReq('GET','/'+saved+'?fields=spreadsheetId');
-      sheetId=c.spreadsheetId;
-      await garantirAbas(abas);
-      atualizarPills();
-      return;
-    }catch(e){}
+      if(c&&c.spreadsheetId){
+        sheetId=c.spreadsheetId;
+        await garantirAbas(abas);
+        atualizarPills();
+        return;
+      }
+      localStorage.removeItem(LS_SHEET);
+    }catch(e){ localStorage.removeItem(LS_SHEET); }
   }
   const list=await(await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%22Advoga+CRM%22%20and%20trashed%3Dfalse&fields=files(id)',{headers:{Authorization:'Bearer '+gToken}})).json();
   if(list.files&&list.files.length>0){
@@ -816,7 +819,8 @@ async function sincTudo(){
   if(!gToken){ toast('Conecte sua conta Google primeiro.','err'); return; }
   showLoading('Sincronizando...');
   try{
-    if(!sheetId)await initSheets();
+    await initSheets();
+    if(!sheetId)throw new Error('Não foi possível localizar a planilha.');
     await carregarDados();
     toast('Sincronizado com a planilha! ✓','ok');
   }
