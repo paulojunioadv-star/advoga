@@ -717,7 +717,12 @@ async function sheetsReq(method,path,body){
     method,headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},
     body:body?JSON.stringify(body):undefined
   });
-  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||'Sheets API error '+r.status); }
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}));
+    const msg=(e.error&&e.error.message)||('Sheets API error '+r.status);
+    console.error('[sheetsReq] FALHOU:',method,path,'→',msg);
+    throw new Error(msg);
+  }
   return r.json();
 }
 
@@ -735,18 +740,27 @@ async function initSheets(){
   const saved=localStorage.getItem(LS_SHEET);
   const abas=Object.keys(ABA_KEYS);
   if(saved){
-    try{
-      const c=await sheetsReq('GET','/'+saved+'?fields=spreadsheetId');
-      if(c&&c.spreadsheetId){
-        sheetId=c.spreadsheetId;
-        await garantirAbas(abas);
-        atualizarPills();
-        return;
-      }
+    const masterId=MASTER_SHEET_FIXED||MASTER_SHEET_ID||localStorage.getItem(LS_MASTER)||'';
+    if(saved===masterId){
+      // cache aponta para a planilha Master por engano — descarta
       localStorage.removeItem(LS_SHEET);
-    }catch(e){ localStorage.removeItem(LS_SHEET); }
+    } else {
+      try{
+        const c=await sheetsReq('GET','/'+saved+'?fields=spreadsheetId,sheets.properties.title');
+        const titulos=((c&&c.sheets)||[]).map(s=>s.properties.title);
+        // Só aceita o cache se for uma planilha CRM válida (tem a aba Clientes)
+        if(c&&c.spreadsheetId&&titulos.includes('Clientes')){
+          sheetId=c.spreadsheetId;
+          await garantirAbas(abas);
+          atualizarPills();
+          return;
+        }
+        localStorage.removeItem(LS_SHEET);
+      }catch(e){ localStorage.removeItem(LS_SHEET); }
+    }
   }
-  const list=await(await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%22Advoga+CRM%22%20and%20trashed%3Dfalse&fields=files(id)',{headers:{Authorization:'Bearer '+gToken}})).json();
+  const driveQuery="name='Advoga CRM' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
+  const list=await(await fetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(driveQuery)+'&fields=files(id,name)&orderBy=createdTime',{headers:{Authorization:'Bearer '+gToken}})).json();
   if(list.files&&list.files.length>0){
     sheetId=list.files[0].id;
     await garantirAbas(abas);
@@ -788,16 +802,20 @@ async function garantirAbas(abas){
 }
 
 async function carregarDados(){
-  for(const aba of Object.keys(ABA_KEYS)){
-    const r=await sheetsReq('GET','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1:Z1000');
-    const rows=r.values||[];
+  const abas=Object.keys(ABA_KEYS);
+  // batchGet: uma única requisição para todas as abas. Não falha se uma aba não existir.
+  const ranges=abas.map(a=>'ranges='+encodeURIComponent(a+'!A1:Z1000')).join('&');
+  const resp=await sheetsReq('GET','/'+sheetId+'/values:batchGet?'+ranges);
+  const vr=resp.valueRanges||[];
+  abas.forEach((aba,idx)=>{
+    const rows=(vr[idx]&&vr[idx].values)||[];
     if(rows.length>1){
       const hdr=(rows[0]&&rows[0].length)?rows[0]:ABA_KEYS[aba];
       db[ABA_DB[aba]]=rows.slice(1).filter(row=>row.length&&row.some(c=>c!=='')).map(row=>{const o={};hdr.forEach((h,i)=>o[h]=row[i]||'');return o;});
     }else{
       db[ABA_DB[aba]]=[];
     }
-  }
+  });
   salvarLocal(); renderAll();
   if(cur==='agenda')renderAgenda();
 }
