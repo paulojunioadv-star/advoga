@@ -28,7 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .llogo{text-align:center;margin-bottom:28px}
 .llogo-icon{font-size:40px;color:var(--blue);margin-bottom:8px}
 .llogo-name{font-size:28px;font-weight:700;letter-spacing:-0.5px}
-.llogo-tag{font-size:11px;color:var(--text3);letter-spacing:1.5px;margin-top:2px}
+.llogo-tag{font-size:11px;color:var(--text3);letter-spacing:.8px;margin-top:4px;white-space:nowrap}
 .gbtn{width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500}
 .gbtn:hover{background:var(--bg3)}
 .blocked{background:var(--red-bg);border:1px solid var(--red-text);border-radius:var(--r);padding:14px;text-align:center;color:var(--red-text);font-size:13px;margin-top:16px}
@@ -40,9 +40,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* SIDEBAR */
 .sidebar{width:var(--sw);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .25s ease;z-index:60}
-.slogo{padding:20px 16px 14px;border-bottom:1px solid var(--border)}
-.slogo-name{font-size:20px;font-weight:700;color:var(--blue-text)}
-.slogo-tag{font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:1px}
+.slogo{padding:16px 12px 14px;border-bottom:1px solid var(--border);text-align:center}
+.slogo-name{font-size:18px;font-weight:700;color:var(--blue-text);white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px}
+.slogo-tag{font-size:9px;color:var(--text3);letter-spacing:.8px;margin-top:4px;font-style:italic;white-space:nowrap;text-align:center}
 .gpills{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap}
 .gpill{font-size:10px;padding:3px 7px;border-radius:99px;font-weight:500;cursor:pointer}
 .gpill.on{background:var(--green-bg);color:var(--green-text)}
@@ -282,7 +282,7 @@ tr:hover td{background:var(--bg3)}
     <div class="llogo">
       <div class="llogo-icon"><i class="ti ti-scale"></i></div>
       <div class="llogo-name">Organiza CRM</div>
-      <div class="llogo-tag">MENOS GESTÃO. MAIS ADVOCACIA.</div>
+      <div class="llogo-tag">Menos gestão. Mais advocacia.</div>
     </div>
     <p style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px">Acesse com sua conta Google autorizada.</p>
     <button class="gbtn" onclick="loginGoogle()">
@@ -299,7 +299,7 @@ tr:hover td{background:var(--bg3)}
   <div class="sidebar" id="sidebar">
     <div class="slogo">
       <div class="slogo-name"><i class="ti ti-scale" style="color:var(--blue)"></i> Organiza CRM</div>
-      <div class="slogo-tag">MENOS GESTÃO. MAIS ADVOCACIA.</div>
+      <div class="slogo-tag">Menos gestão · Mais advocacia</div>
     </div>
     <div class="gpills">
       <span class="gpill off" id="pill-drive" onclick="loginGoogle()"><span id="ptd">Drive</span></span>
