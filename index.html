@@ -215,6 +215,27 @@ tr:hover td{background:var(--bg3)}
 .doc-btn span{font-size:11px;font-weight:600;display:block}
 .doc-btn small{font-size:10px;color:var(--text3)}
 
+
+/* LIMITE DE PLANO */
+.limit-bar{background:var(--amber-bg);border:1px solid var(--amber);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:var(--amber-text)}
+.limit-bar.danger{background:var(--red-bg);border-color:var(--red);color:var(--red-text)}
+.limit-progress{height:5px;border-radius:99px;background:var(--border);flex-shrink:0;width:100px;overflow:hidden}
+.limit-progress-fill{height:100%;border-radius:99px;background:var(--amber);transition:width .3s}
+.limit-progress-fill.danger{background:var(--red)}
+.premium-lock{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--purple-text);background:var(--purple-bg);padding:2px 8px;border-radius:99px;font-weight:600}
+
+/* WA MESSAGES */
+.wa-tpl-btn{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);font-size:12px;cursor:pointer;font-weight:500;color:var(--text);white-space:nowrap;text-decoration:none}
+.wa-tpl-btn:hover{background:var(--green-bg);border-color:var(--green);color:var(--green-text)}
+.wa-tpl-btn i{color:#25d366;font-size:15px}
+
+/* RELATORIO */
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:600px){.rel-grid{grid-template-columns:1fr 1fr}}
+.rel-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px}
+.rel-val{font-size:22px;font-weight:700;margin-bottom:2px}
+.rel-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+
 /* DASH CHARTS */
 .dchart{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 @media(max-width:640px){.dchart{grid-template-columns:1fr}}
@@ -270,6 +291,7 @@ tr:hover td{background:var(--bg3)}
       <div class="ni" onclick="go('documentos',this)"><i class="ti ti-file-text"></i> Documentos</div>
       <div class="ni" onclick="go('pdf',this)"><i class="ti ti-file-zip"></i> Ferramentas PDF</div>
       <div class="ni" id="nav-acessos" style="display:none" onclick="go('acessos',this)"><i class="ti ti-shield-check"></i> Gerenciar Acessos</div>
+      <div class="ni" onclick="go('relatorios',this)"><i class="ti ti-chart-bar"></i> Relatórios</div>
       <div class="ni" onclick="go('configuracoes',this)"><i class="ti ti-settings"></i> Configurações</div>
     </div>
     <div class="sfoot">
@@ -308,9 +330,10 @@ tr:hover td{background:var(--bg3)}
 
 <!-- CLIENTES -->
 <div class="panel" id="p-clientes">
+  <div id="cli-limit-bar"></div>
   <div class="card">
     <div class="ch"><span class="ct">Clientes</span><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" placeholder="Buscar..." style="border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;font-size:12px;outline:none;width:160px" oninput="filtrarLista('cli-body',this.value)"><button class="btn btn-p" onclick="openModal('cliente')"><i class="ti ti-plus"></i> Novo</button></div></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th>Área</th><th>Telefone</th><th>E-mail</th><th>Status</th><th>Ações</th></tr></thead><tbody id="cli-body"></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th>Área</th><th>Telefone</th><th>Status</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody id="cli-body"></tbody></table></div>
   </div>
 </div>
 
@@ -318,7 +341,7 @@ tr:hover td{background:var(--bg3)}
 <div class="panel" id="p-processos">
   <div class="card">
     <div class="ch"><span class="ct">Processos</span><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" placeholder="Buscar..." style="border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;font-size:12px;outline:none;width:160px" oninput="filtrarLista('proc-body',this.value)"><button class="btn btn-p" onclick="openModal('processo')"><i class="ti ti-plus"></i> Novo</button></div></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Número</th><th>Assunto</th><th>Cliente</th><th>Vara/Juízo</th><th>Status</th><th>Prazo</th><th>Ações</th></tr></thead><tbody id="proc-body"></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Número</th><th>Assunto</th><th>Cliente</th><th>Vara/Juízo</th><th>Status</th><th>Prazo</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody id="proc-body"></tbody></table></div>
   </div>
 </div>
 
@@ -326,7 +349,7 @@ tr:hover td{background:var(--bg3)}
 <div class="panel" id="p-tarefas">
   <div class="card">
     <div class="ch"><span class="ct">Tarefas</span><button class="btn btn-p" onclick="openModal('tarefa')"><i class="ti ti-plus"></i> Nova</button></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Tarefa</th><th>Cliente</th><th>Prazo</th><th>Prioridade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tar-body"></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Tarefa</th><th>Cliente</th><th>Prazo</th><th>Prioridade</th><th>Status</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody id="tar-body"></tbody></table></div>
   </div>
 </div>
 
@@ -358,7 +381,7 @@ tr:hover td{background:var(--bg3)}
       <div style="text-align:center;padding:12px;background:var(--blue-bg);border-radius:var(--r)"><div style="font-size:11px;color:var(--blue-text);font-weight:600;margin-bottom:4px">TOTAL</div><div style="font-size:22px;font-weight:700;color:var(--blue-text)" id="f-tot">R$0</div></div>
     </div>
   </div>
-  <div class="card"><div class="ch"><span class="ct">Lançamentos</span><button class="btn btn-p" onclick="openModal('financeiro')"><i class="ti ti-plus"></i> Novo</button></div><div class="tbl-wrap"><table><thead><tr><th>Descrição</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="fin-body"></tbody></table></div></div>
+  <div class="card"><div class="ch"><span class="ct">Lançamentos</span><button class="btn btn-p" onclick="openModal('financeiro')"><i class="ti ti-plus"></i> Novo</button></div><div class="tbl-wrap"><table><thead><tr><th>Descrição</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody id="fin-body"></tbody></table></div></div>
 </div>
 
 <!-- LEADS -->
@@ -511,6 +534,27 @@ tr:hover td{background:var(--bg3)}
         <input class="fi" id="link-acesso" value="https://paulojunioadv-star.github.io/advoga" readonly style="flex:1;background:var(--bg3)">
         <button class="btn btn-p" onclick="copiarLink()"><i class="ti ti-copy"></i> Copiar</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- RELATÓRIOS -->
+<div class="panel" id="p-relatorios">
+  <div id="rel-limit-bar"></div>
+  <div class="rel-grid" id="rel-stats"></div>
+  <div class="dchart">
+    <div class="card"><div class="ch"><span class="ct"><i class="ti ti-trending-up"></i> Financeiro por mês</span></div><div style="padding:16px;height:220px"><canvas id="chart-rel-mensal"></canvas></div></div>
+    <div class="card"><div class="ch"><span class="ct"><i class="ti ti-chart-donut"></i> Processos por status</span></div><div style="padding:16px;height:220px;display:flex;align-items:center;justify-content:center"><canvas id="chart-rel-proc"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct"><i class="ti ti-database-export"></i> Backup dos dados</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="fazerBackup()"><i class="ti ti-download"></i> Baixar JSON</button>
+        <button class="btn btn-p" onclick="fazerBackupDrive()" id="btn-backup-drive"><i class="ti ti-brand-google-drive"></i> Salvar no Drive</button>
+      </div>
+    </div>
+    <div style="padding:16px">
+      <div id="backup-lista" style="font-size:13px;color:var(--text3)">Carregando backups...</div>
     </div>
   </div>
 </div>
@@ -674,6 +718,7 @@ async function verificarAcesso(email){
     const d=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/Usu%C3%A1rios!A:C',{headers:{Authorization:'Bearer '+gToken}})).json();
     if(!d.values||d.values.length<2)return false;
     const row=d.values.slice(1).find(r=>r[0]&&r[0].toLowerCase()===email.toLowerCase());
+    if(row&&row[2])localStorage.setItem('advoga_plano',row[2].toLowerCase());
     return row&&row[1]&&row[1].toLowerCase()==='ativo';
   }catch(e){return false;}
 }
@@ -840,6 +885,8 @@ async function sincTudo(){
     await initSheets();
     if(!sheetId)throw new Error('Não foi possível localizar a planilha.');
     await carregarDados();
+    // Auto-backup silencioso no Drive
+    try{if(gToken)fazerBackupDrive().catch(()=>{});}catch(e){}
     toast('Sincronizado com a planilha! ✓','ok');
   }
   catch(e){ toast('Erro ao sincronizar: '+e.message,'err'); }
@@ -874,7 +921,7 @@ function exportarConfig(){
 }
 
 // ══ NAVEGAÇÃO ══
-const TITLES={dashboard:'Dashboard',acessos:'Gerenciar Acessos',clientes:'Clientes',processos:'Processos',tarefas:'Tarefas',agenda:'Agenda',financeiro:'Financeiro',leads:'Pipeline Leads',drive:'Google Drive',documentos:'Documentos',pdf:'Ferramentas PDF',configuracoes:'Configurações'};
+const TITLES={dashboard:'Dashboard',acessos:'Gerenciar Acessos',clientes:'Clientes',processos:'Processos',tarefas:'Tarefas',agenda:'Agenda',financeiro:'Financeiro',leads:'Pipeline Leads',drive:'Google Drive',documentos:'Documentos',pdf:'Ferramentas PDF',relatorios:'Relatórios & Backup',configuracoes:'Configurações'};
 let cur='dashboard';
 
 function go(id,el){
@@ -889,6 +936,7 @@ function go(id,el){
   if(id==='documentos')   renderDocumentos();
   if(id==='pdf')          renderPDF();
   if(id==='acessos')      renderAcessos();
+  if(id==='relatorios')   renderRelatorios();
   if(id==='configuracoes')carregarConfig();
   renderAll();
 }
@@ -938,38 +986,59 @@ function renderDash(){
 }
 
 function renderClientes(){
-  g('cli-body').innerHTML=db.clientes.map(c=>`
-    <tr><td><div class="fr"><div class="av ${avClass(c.nome)}">${initials(c.nome)}</div><div><div>${c.nome}</div><div style="font-size:11px;color:var(--text3)">${c.cpf||''}</div></div></div></td>
-    <td><span class="badge bb">${c.area||'—'}</span></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td>
+  renderLimitBar('cli-limit-bar','clientes','Clientes');
+  g('cli-body').innerHTML=db.clientes.map(c=>{
+    const wa=c.telefone?`<a class="wbtn" href="https://wa.me/55${c.telefone.replace(/\D/g,'')}" target="_blank" title="Abrir WhatsApp"><i class="ti ti-brand-whatsapp"></i></a>`:'—';
+    const waDoc=waBtnDocumentos(c.nome,c.telefone);
+    return`<tr><td><div class="fr"><div class="av ${avClass(c.nome)}">${initials(c.nome)}</div><div><div>${c.nome}</div><div style="font-size:11px;color:var(--text3)">${c.cpf||''}</div></div></div></td>
+    <td><span class="badge bb">${c.area||'—'}</span></td><td>${c.telefone||'—'}</td>
     <td><span class="badge ${c.status==='ativo'?'bg':'ba'}">${c.status||'—'}</span></td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('cliente','${c.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('clientes','${c.id}',salvarClientes)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
+    <td><div style="display:flex;gap:4px;align-items:center">${wa}${waDoc}</div></td>
+    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('cliente','${c.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('clientes','${c.id}',salvarClientes)"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
 }
 
 function renderProcessos(){
-  g('proc-body').innerHTML=db.processos.map(p=>`
-    <tr><td><code style="font-size:11px">${p.numero||'—'}</code></td><td>${p.assunto||'—'}</td><td>${p.cliente||'—'}</td><td>${p.vara||'—'}</td>
+  g('proc-body').innerHTML=db.processos.map(p=>{
+    const cli=db.clientes.find(c=>c.nome===p.cliente);
+    const tel=cli&&cli.telefone?cli.telefone:'';
+    const waL=tel?`<a class="wbtn" href="https://wa.me/55${tel.replace(/\D/g,'')}" target="_blank" title="WhatsApp do cliente"><i class="ti ti-brand-whatsapp"></i></a>`:'';
+    const waLemb=p.prazo&&tel?waBtnAudiencia(p.cliente,fmtDate(p.prazo),'',tel):'';
+    return`<tr><td><code style="font-size:11px">${p.numero||'—'}</code></td><td>${p.assunto||'—'}</td><td>${p.cliente||'—'}</td><td>${p.vara||'—'}</td>
     <td><span class="badge ${p.status==='andamento'?'bg':p.status==='arquivado'?'ba':'bb'}">${p.status||'—'}</span></td>
     <td>${fmtDate(p.prazo)||'—'}</td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('processo','${p.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('processos','${p.id}',salvarProcessos)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(7,'briefcase','Nenhum processo cadastrado.');
+    <td><div style="display:flex;gap:4px;align-items:center">${waL}${waLemb}</div></td>
+    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('processo','${p.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('processos','${p.id}',salvarProcessos)"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||emptyRow(8,'briefcase','Nenhum processo cadastrado.');
 }
 
 function renderTarefas(){
   const prior={alta:'br',media:'ba',baixa:'bg'};
-  g('tar-body').innerHTML=db.tarefas.map(t=>`
-    <tr><td>${t.titulo||'—'}</td><td>${t.cliente||'—'}</td><td>${fmtDate(t.prazo)||'—'}</td>
+  g('tar-body').innerHTML=db.tarefas.map(t=>{
+    const cli=db.clientes.find(c=>c.nome===t.cliente);
+    const tel=cli&&cli.telefone?cli.telefone:'';
+    const waAv=t.cliente&&tel?waBtnTarefa(t.cliente,t.titulo,t.prazo,tel):'';
+    return`<tr><td>${t.titulo||'—'}</td><td>${t.cliente||'—'}</td><td>${fmtDate(t.prazo)||'—'}</td>
     <td><span class="badge ${prior[t.prioridade]||'bb'}">${t.prioridade||'—'}</span></td>
     <td><span class="badge ${t.status==='concluida'?'bg':t.status==='pendente'?'ba':'bb'}">${t.status||'—'}</span></td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('tarefa','${t.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('tarefas','${t.id}',salvarTarefas)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(6,'checkbox','Nenhuma tarefa.');
+    <td>${waAv||'—'}</td>
+    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('tarefa','${t.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('tarefas','${t.id}',salvarTarefas)"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||emptyRow(7,'checkbox','Nenhuma tarefa.');
 }
 
 function renderFinanceiro(){
   const rec=db.financeiro.filter(f=>f.status==='pago').reduce((a,b)=>a+(parseFloat(b.valor)||0),0);
   const pend=db.financeiro.filter(f=>f.status==='pendente').reduce((a,b)=>a+(parseFloat(b.valor)||0),0);
   g('f-rec').textContent=fmtMoney(rec); g('f-pend').textContent=fmtMoney(pend); g('f-tot').textContent=fmtMoney(rec+pend);
-  g('fin-body').innerHTML=db.financeiro.map(f=>`
-    <tr><td>${f.descricao||'—'}</td><td>${f.cliente||'—'}</td><td style="font-weight:600">${fmtMoney(f.valor)}</td><td>${fmtDate(f.vencimento)||'—'}</td>
+  g('fin-body').innerHTML=db.financeiro.map(f=>{
+    const cli=db.clientes.find(c=>c.nome===f.cliente);
+    const tel=cli&&cli.telefone?cli.telefone:'';
+    const waCob=f.status==='pendente'&&tel?waBtnCobranca(f.cliente,fmtMoney(f.valor),tel):'';
+    return`<tr><td>${f.descricao||'—'}</td><td>${f.cliente||'—'}</td><td style="font-weight:600">${fmtMoney(f.valor)}</td><td>${fmtDate(f.vencimento)||'—'}</td>
     <td><span class="badge ${f.status==='pago'?'bg':'ba'}">${f.status||'—'}</span></td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('financeiro','${f.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('financeiro','${f.id}',salvarFinanceiro)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(6,'currency-dollar','Nenhum lançamento.');
+    <td>${waCob||'—'}</td>
+    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('financeiro','${f.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('financeiro','${f.id}',salvarFinanceiro)"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||emptyRow(7,'currency-dollar','Nenhum lançamento.');
 }
 
 const LEAD_STAGES=['contato','qualificado','proposta','cliente'];
@@ -1168,7 +1237,7 @@ const modalForms={
     <div class="fgrid"><div class="fg"><label class="fl">Telefone/WhatsApp</label><input class="fi" id="f4" value="${c.telefone||''}"></div><div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="f5" value="${c.email||''}"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Profissão</label><input class="fi" id="f6" value="${c.profissao||''}"></div><div class="fg"><label class="fl">Estado civil</label><select class="fi" id="f7">${['solteiro(a)','casado(a)','divorciado(a)','viúvo(a)'].map(v=>`<option ${c.estadoCivil===v?'selected':''}>${v}</option>`).join('')}</select></div></div>
     <div class="fg"><label class="fl">Rua, número</label><input class="fi" id="f8" value="${c.rua||''}"></div>
-    <div class="fgrid"><div class="fg"><label class="fl">Bairro</label><input class="fi" id="f9" value="${c.bairro||''}"></div><div class="fg"><label class="fl">CEP</label><input class="fi" id="f10" value="${c.cep||''}"></div></div>
+    <div class="fgrid"><div class="fg"><label class="fl">Bairro</label><input class="fi" id="f9" value="${c.bairro||''}"></div><div class="fg"><label class="fl">CEP <span style="font-size:10px;color:var(--blue-text)">(preenchimento automático)</span></label><input class="fi" id="f10" value="${c.cep||''}" placeholder="00000-000" onblur="buscarCEP(this.value)" oninput="this.value=this.value.replace(/[^\d-]/g,'').slice(0,9)"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Cidade</label><input class="fi" id="f11" value="${c.cidade||''}"></div><div class="fg"><label class="fl">UF</label><input class="fi" id="f12" value="${c.estado||'GO'}"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Área do direito</label><select class="fi" id="f13">${areas.map(a=>`<option ${c.area===a?'selected':''}>${a}</option>`).join('')}</select></div><div class="fg"><label class="fl">Status</label><select class="fi" id="f14"><option ${c.status==='ativo'||!c.status?'selected':''}>ativo</option><option ${c.status==='inativo'?'selected':''}>inativo</option></select></div></div>
     <div class="fg"><label class="fl">Observações</label><textarea class="fi" id="f15" rows="2">${c.obs||''}</textarea></div>`;
@@ -1214,7 +1283,20 @@ const modalForms={
   }
 };
 
+
+function closeModal(){ g('overlay').classList.remove('open'); mEditId=null; window._modalDate=''; _modalAcesso=false; }
+function closeModalOut(e){ if(e.target===g('overlay'))closeModal(); }
+
 function openModal(tipo,obj,_,data){
+  // Check limite before opening new item modal
+  if(!obj && (tipo==='cliente'||tipo==='processo')){
+    const colMap={cliente:'clientes',processo:'processos'};
+    const l=checkLimite(colMap[tipo]);
+    if(!l.ok){
+      toast('Limite atingido! Faça upgrade para Premium para adicionar mais registros.','err');
+      return;
+    }
+  }
   modalType=tipo; mEditId=obj?obj.id:null; window._modalDate=data||''; _modalAcesso=false;
   const tN={cliente:'Novo cliente',processo:'Novo processo',tarefa:'Nova tarefa',financeiro:'Novo lançamento',lead:'Novo lead',evento:'Novo evento'};
   const tE={cliente:'Editar cliente',processo:'Editar processo',tarefa:'Editar tarefa',financeiro:'Editar lançamento',lead:'Editar lead',evento:'Editar evento'};
@@ -1223,8 +1305,6 @@ function openModal(tipo,obj,_,data){
   g('overlay').classList.add('open');
   setTimeout(()=>{ const fi=g('modal-b').querySelector('input,select,textarea'); if(fi)fi.focus(); },50);
 }
-function closeModal(){ g('overlay').classList.remove('open'); mEditId=null; window._modalDate=''; _modalAcesso=false; }
-function closeModalOut(e){ if(e.target===g('overlay'))closeModal(); }
 
 async function saveModal(){
   if(_saving)return;
@@ -1532,6 +1612,227 @@ async function unirPDFs(){
     }else throw new Error(pd.error||'Erro ao unir PDFs.');
   }catch(e){toast('Erro: '+e.message,'err');}
   finally{hideLoading();}
+}
+
+
+// ══ PLANOS ══
+const PLANOS={basico:{clientes:30,processos:50},premium:{clientes:9999,processos:9999}};
+function getUserPlano(){
+  // Admin é sempre premium; usuário comum usa o plano da planilha master
+  if(ADMINS.includes((gUser||'').toLowerCase()))return'premium';
+  return localStorage.getItem('advoga_plano')||'basico';
+}
+function checkLimite(tipo){
+  const plano=getUserPlano();
+  if(plano==='premium')return{ok:true,atual:db[tipo].length,max:9999,pct:0};
+  const max=PLANOS.basico[tipo]||9999;
+  const atual=db[tipo].length;
+  return{ok:atual<max,atual,max,pct:Math.min(100,Math.round((atual/max)*100))};
+}
+function renderLimitBar(containerId,tipo,label){
+  const el=g(containerId); if(!el)return;
+  const l=checkLimite(tipo);
+  if(l.ok&&l.pct<80){el.innerHTML='';return;}
+  if(getUserPlano()==='premium'){el.innerHTML='';return;}
+  const danger=!l.ok||l.pct>=100;
+  el.innerHTML=`<div class="limit-bar ${danger?'danger':''}">
+    <div><strong>${danger?'Limite atingido!':label+' — quase no limite'}</strong> ${l.atual} de ${l.max} ${label.toLowerCase()}<br><small style="opacity:.8">Upgrade para Premium para registros ilimitados.</small></div>
+    <div style="text-align:right;flex-shrink:0"><div class="limit-progress"><div class="limit-progress-fill ${danger?'danger':''}" style="width:${l.pct}%"></div></div><small>${l.pct}%</small></div>
+  </div>`;
+}
+
+// ══ VIACEP ══
+async function buscarCEP(cep){
+  const c=cep.replace(/\D/g,'');
+  if(c.length!==8)return;
+  const el=g('f10'); if(el){el.value='Buscando...';el.disabled=true;}
+  try{
+    const r=await fetch('https://viacep.com.br/ws/'+c+'/json/');
+    const d=await r.json();
+    if(d.erro){toast('CEP não encontrado.','err');if(el){el.value=cep;el.disabled=false;}return;}
+    if(g('f8'))g('f8').value=d.logradouro||'';
+    if(g('f9'))g('f9').value=d.bairro||'';
+    if(g('f11'))g('f11').value=d.localidade||'';
+    if(g('f12'))g('f12').value=d.uf||'';
+    if(el){el.value=cep;el.disabled=false;el.focus();}
+    toast('Endereço preenchido! ✓','ok');
+  }catch(e){toast('Erro ao buscar CEP.','err');if(el){el.value=cep;el.disabled=false;}}
+}
+
+// ══ WHATSAPP MENSAGENS PRONTAS ══
+function waLink(telefone,msg){
+  const num='55'+telefone.replace(/\D/g,'');
+  return'https://wa.me/'+num+'?text='+encodeURIComponent(msg);
+}
+function waBtnCobranca(nome,valor,telefone){
+  if(!telefone)return'';
+  const msg=`Olá ${nome},
+
+Identificamos uma pendência financeira de ${valor} referente aos nossos honorários advocatícios.
+
+Por favor, entre em contato para regularização.
+
+Atenciosamente,
+${cfg.nome||'Escritório de Advocacia'}`;
+  return`<a class="wa-tpl-btn" href="${waLink(telefone,msg)}" target="_blank"><i class="ti ti-brand-whatsapp"></i> Cobrar</a>`;
+}
+function waBtnAudiencia(nome,data,hora,telefone){
+  if(!telefone)return'';
+  const msg=`Olá ${nome},
+
+Lembramos que sua audiência está agendada para:
+
+📅 Data: ${data}
+🕐 Horário: ${hora||'a confirmar'}
+
+Em caso de dúvidas, entre em contato.
+
+Atenciosamente,
+${cfg.nome||'Escritório de Advocacia'}`;
+  return`<a class="wa-tpl-btn" href="${waLink(telefone,msg)}" target="_blank"><i class="ti ti-brand-whatsapp"></i> Lembrete</a>`;
+}
+function waBtnDocumentos(nome,telefone){
+  if(!telefone)return'';
+  const msg=`Olá ${nome},
+
+Precisamos dos seguintes documentos para dar continuidade ao seu atendimento:
+
+• RG e CPF
+• Comprovante de residência
+• Carteira de trabalho (se houver)
+
+Por gentileza, providencie o quanto antes.
+
+Atenciosamente,
+${cfg.nome||'Escritório de Advocacia'}`;
+  return`<a class="wa-tpl-btn" href="${waLink(telefone,msg)}" target="_blank"><i class="ti ti-brand-whatsapp"></i> Documentos</a>`;
+}
+function waBtnTarefa(nome,titulo,prazo,telefone){
+  if(!telefone)return'';
+  const msg=`Olá ${nome},
+
+Gostaríamos de informar que existe uma pendência relacionada ao seu processo:
+
+📋 ${titulo}${prazo?`
+📅 Prazo: ${fmtDate(prazo)}`:''}
+
+Fique à disposição para esclarecimentos.
+
+Atenciosamente,
+${cfg.nome||'Escritório de Advocacia'}`;
+  return`<a class="wa-tpl-btn" href="${waLink(telefone,msg)}" target="_blank"><i class="ti ti-brand-whatsapp"></i> Avisar</a>`;
+}
+
+// ══ BACKUP ══
+function fazerBackup(){
+  const dados={versao:'1.0',data:new Date().toISOString(),clientes:db.clientes,processos:db.processos,tarefas:db.tarefas,financeiro:db.financeiro,leads:db.leads,eventos:db.eventos};
+  const blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=u; a.download='advoga-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u);
+  toast('Backup baixado! ✓','ok');
+}
+async function fazerBackupDrive(){
+  if(!gToken){toast('Conecte o Google primeiro.','err');return;}
+  showLoading('Salvando backup no Drive...');
+  try{
+    const dados={versao:'1.0',data:new Date().toISOString(),clientes:db.clientes,processos:db.processos,tarefas:db.tarefas,financeiro:db.financeiro,leads:db.leads,eventos:db.eventos};
+    const nome='advoga-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    // Find or create backup folder
+    let folderId='';
+    const fq=await(await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'Advoga%20Backups'%20and%20mimeType%3D'application%2Fvnd.google-apps.folder'%20and%20trashed%3Dfalse&fields=files(id)",{headers:{Authorization:'Bearer '+gToken}})).json();
+    if(fq.files&&fq.files.length>0){folderId=fq.files[0].id;}
+    else{
+      const fc=await(await fetch('https://www.googleapis.com/drive/v3/files',{method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({name:'Advoga Backups',mimeType:'application/vnd.google-apps.folder'})})).json();
+      folderId=fc.id;
+    }
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify({name:nome,parents:[folderId]})],{type:'application/json'}));
+    form.append('file',new Blob([JSON.stringify(dados,null,2)],{type:'application/json'}));
+    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{Authorization:'Bearer '+gToken},body:form});
+    if(res.ok){toast('Backup salvo no Drive! ✓','ok'); await listarBackupsDrive();}
+    else throw new Error('Falha ao salvar');
+  }catch(e){toast('Erro no backup: '+e.message,'err');}
+  finally{hideLoading();}
+}
+async function listarBackupsDrive(){
+  const el=g('backup-lista'); if(!el)return;
+  if(!gToken){el.innerHTML='<span style="color:var(--text3)">Conecte o Google para ver backups no Drive.</span>';return;}
+  try{
+    const fq=await(await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'Advoga%20Backups'%20and%20mimeType%3D'application%2Fvnd.google-apps.folder'%20and%20trashed%3Dfalse&fields=files(id)",{headers:{Authorization:'Bearer '+gToken}})).json();
+    if(!fq.files||!fq.files.length){el.innerHTML='<span style="color:var(--text3)">Nenhum backup no Drive ainda.</span>';return;}
+    const fid=fq.files[0].id;
+    const bq=await(await fetch("https://www.googleapis.com/drive/v3/files?q='"+fid+"'+in+parents+and+trashed%3Dfalse&fields=files(id,name,createdTime,size)&orderBy=createdTime+desc&pageSize=10",{headers:{Authorization:'Bearer '+gToken}})).json();
+    if(!bq.files||!bq.files.length){el.innerHTML='<span style="color:var(--text3)">Nenhum backup ainda.</span>';return;}
+    el.innerHTML=bq.files.map(f=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <i class="ti ti-file-type-js" style="color:var(--amber-text)"></i>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500">${f.name}</div><div style="font-size:11px;color:var(--text3)">${new Date(f.createdTime).toLocaleString('pt-BR')} · ${fmtBytes(parseInt(f.size||0))}</div></div>
+        <a class="btn" href="https://drive.google.com/file/d/${f.id}/view" target="_blank"><i class="ti ti-external-link"></i></a>
+      </div>`).join('');
+  }catch(e){el.innerHTML='<span style="color:var(--text3)">Erro ao carregar backups.</span>';}
+}
+
+// ══ RELATÓRIOS ══
+function renderRelatorios(){
+  carregarConfig();
+  const plano=getUserPlano();
+  const lb=g('rel-limit-bar');
+  if(lb&&plano!=='premium'){
+    lb.innerHTML=`<div class="limit-bar" style="margin-bottom:16px">
+      <div><i class="ti ti-chart-bar"></i> <strong>Relatórios avançados</strong> — disponível no plano Premium.<br><small>No Básico você vê os totais. No Premium: gráficos mensais, taxa de conversão e muito mais.</small></div>
+      <span class="premium-lock"><i class="ti ti-crown"></i> Premium</span>
+    </div>`;
+  } else if(lb){lb.innerHTML='';}
+
+  // Stats cards
+  const rec=db.financeiro.filter(f=>f.status==='pago').reduce((a,b)=>a+(parseFloat(b.valor)||0),0);
+  const pend=db.financeiro.filter(f=>f.status==='pendente').reduce((a,b)=>a+(parseFloat(b.valor)||0),0);
+  const ativos=db.processos.filter(p=>p.status==='andamento').length;
+  const conc=db.processos.filter(p=>p.status==='encerrado').length;
+  const taxa=db.processos.length>0?Math.round((conc/db.processos.length)*100):0;
+  const leadsC=db.leads.filter(l=>l.stage==='cliente').length;
+  const convLead=db.leads.length>0?Math.round((leadsC/db.leads.length)*100):0;
+  const st=g('rel-stats');
+  if(st)st.innerHTML=`
+    <div class="rel-card"><div class="rel-val" style="color:var(--green)">${fmtMoney(rec)}</div><div class="rel-lbl">Total recebido</div></div>
+    <div class="rel-card"><div class="rel-val" style="color:var(--amber)">${fmtMoney(pend)}</div><div class="rel-lbl">A receber</div></div>
+    <div class="rel-card"><div class="rel-val">${fmtMoney(rec+pend)}</div><div class="rel-lbl">Total contratado</div></div>
+    <div class="rel-card"><div class="rel-val">${ativos}</div><div class="rel-lbl">Processos ativos</div></div>
+    <div class="rel-card"><div class="rel-val">${taxa}%</div><div class="rel-lbl">Taxa de encerramento</div></div>
+    <div class="rel-card"><div class="rel-val">${convLead}%</div><div class="rel-lbl">Conversão de leads</div></div>
+  `;
+
+  // Charts (premium only)
+  if(typeof Chart==='undefined')return;
+  if(plano==='premium'){
+    // Financeiro por mês (últimos 6 meses)
+    const mc=g('chart-rel-mensal');
+    if(mc){
+      if(window._cRM)window._cRM.destroy();
+      const meses=[]; const recs=[]; const pends=[];
+      const mn=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const now=new Date();
+      for(let i=5;i>=0;i--){
+        const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+        const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+        meses.push(mn[d.getMonth()]+'/'+String(d.getFullYear()).slice(2));
+        recs.push(db.financeiro.filter(f=>f.status==='pago'&&(f.vencimento||'').startsWith(key)).reduce((a,b)=>a+(parseFloat(b.valor)||0),0));
+        pends.push(db.financeiro.filter(f=>f.status==='pendente'&&(f.vencimento||'').startsWith(key)).reduce((a,b)=>a+(parseFloat(b.valor)||0),0));
+      }
+      window._cRM=new Chart(mc,{type:'bar',data:{labels:meses,datasets:[{label:'Recebido',data:recs,backgroundColor:'#16a34a',borderRadius:4},{label:'Pendente',data:pends,backgroundColor:'#d97706',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:12}}},scales:{y:{ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR')},grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}});
+    }
+    // Processos por status
+    const pc=g('chart-rel-proc');
+    if(pc){
+      if(window._cRP)window._cRP.destroy();
+      const st2={andamento:0,encerrado:0,arquivado:0};
+      db.processos.forEach(p=>{ if(st2[p.status]!==undefined)st2[p.status]++; });
+      window._cRP=new Chart(pc,{type:'doughnut',data:{labels:['Em andamento','Encerrado','Arquivado'],datasets:[{data:[st2.andamento,st2.encerrado,st2.arquivado],backgroundColor:['#16a34a','#1a6cf5','#d97706'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
+    }
+  }
+
+  listarBackupsDrive();
 }
 
 // ══ ACESSOS ══
