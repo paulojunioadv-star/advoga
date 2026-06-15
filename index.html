@@ -55,6 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .gpill.off{background:var(--bg3);color:var(--text3)}
 .snav{flex:1;padding:10px 8px;overflow-y:auto}
 .ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);font-weight:500;margin-bottom:2px}
+
 .ni:hover{background:var(--bg3);color:var(--text)}
 .ni.active{background:var(--blue-bg);color:var(--blue-text)}
 .ni i{font-size:16px}
@@ -207,7 +208,7 @@ tr:hover td{background:var(--bg3)}
       <div class="ni" onclick="go('drive',this)"><i class="ti ti-brand-google-drive"></i> Google Drive</div>
       <div class="ni" onclick="go('documentos',this)"><i class="ti ti-file-text"></i> Documentos</div>
       <div class="ni" onclick="go('pdf',this)"><i class="ti ti-file-zip"></i> Ferramentas PDF</div>
-      <div class="ni" id="nav-acessos" onclick="go('acessos',this)" style="display:none"><i class="ti ti-shield-check"></i> Gerenciar Acessos</div>
+      <div class="ni" id="nav-acessos" onclick="go('acessos',this)"><i class="ti ti-shield-check"></i> Gerenciar Acessos</div>
       <div class="ni" onclick="go('configuracoes',this)"><i class="ti ti-settings"></i> Configurações</div>
     </div>
     <div class="sfoot">
@@ -552,8 +553,9 @@ tr:hover td{background:var(--bg3)}
         </div>
         <div class="cfg-section">
           <div class="cfg-title"><i class="ti ti-lock"></i> Acesso</div>
-          <div class="fg"><label class="fl">E-mails autorizados (um por linha)</label><textarea class="fi" id="cfg-emails" rows="5" placeholder="usuario@gmail.com&#10;outro@gmail.com" style="resize:vertical"></textarea></div>
-          <div style="font-size:11px;color:var(--text3);margin-top:4px"><i class="ti ti-info-circle"></i> Apenas você (administrador) pode editar esta lista. Salve e faça upload do arquivo na hospedagem.</div>
+          <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue-text)">
+            <i class="ti ti-shield-check"></i> Os acessos são gerenciados pela aba <strong>"Gerenciar Acessos"</strong> no menu lateral (visível apenas para o administrador). Você pode adicionar, bloquear e remover usuários por lá sem precisar mexer no código.
+          </div>
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-p" onclick="salvarConfig()"><i class="ti ti-check"></i> Salvar configurações</button>
@@ -602,7 +604,7 @@ function loginGoogle(){
   msg.innerHTML='<div style="text-align:center;font-size:12px;color:var(--text2)">Conectando...</div>';
   const client=google.accounts.oauth2.initTokenClient({
     client_id:CLIENT_ID,
-    scope:'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email',
+    scope:'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email',
     callback:async(r)=>{
       if(r.error){msg.innerHTML='<div class="blocked"><strong>Erro no login Google.</strong></div>';return;}
       gToken=r.access_token;
@@ -614,6 +616,9 @@ function loginGoogle(){
       if(gUser.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
         await inicializarPlanilhaMestre();
         await entrarApp(true);
+        // Mostrar menu admin imediatamente
+        const na=document.getElementById('nav-acessos');
+        if(na)na.style.display='flex';
         return;
       }
       // Outros usuários: verificar na planilha mestre
@@ -640,18 +645,22 @@ async function inicializarPlanilhaMestre(){
     }catch(e){}
   }
   // Buscar planilha existente
-  const busca=await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%22Advoga+Master+Acessos%22+and+mimeType%3D%22application%2Fvnd.google-apps.spreadsheet%22+and+trashed%3Dfalse&fields=files(id,name)',{headers:{Authorization:'Bearer '+gToken}});
-  const bd=await busca.json();
-  if(bd.files&&bd.files.length>0){
-    MASTER_SHEET_ID=bd.files[0].id;
-    localStorage.setItem('advoga_master_sheet',MASTER_SHEET_ID);
-    return;
-  }
+  try{
+    const busca=await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'Advoga%20Master%20Acessos'%20and%20mimeType%3D'application%2Fvnd.google-apps.spreadsheet'%20and%20trashed%3Dfalse&fields=files(id,name)",{headers:{Authorization:'Bearer '+gToken}});
+    const bd=await busca.json();
+    if(bd.files&&bd.files.length>0){
+      MASTER_SHEET_ID=bd.files[0].id;
+      localStorage.setItem('advoga_master_sheet',MASTER_SHEET_ID);
+      atualizarPills();
+      return;
+    }
+  }catch(e){console.log('Buscando planilha:',e);}
   // Criar planilha mestre
   const criar=await fetch('https://sheets.googleapis.com/v4/spreadsheets',{method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({properties:{title:'Advoga Master Acessos'},sheets:[{properties:{title:'Usuários'}}]})});
   const cd=await criar.json();
   MASTER_SHEET_ID=cd.spreadsheetId;
   localStorage.setItem('advoga_master_sheet',MASTER_SHEET_ID);
+  atualizarPills();
   // Criar cabeçalho e adicionar admin
   await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usuários!A1?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['email','status','plano','nome','data_acesso'],['paulojunio.adv@gmail.com','ativo','admin','Paulo Júnio',new Date().toLocaleDateString('pt-BR')]]})});
 }
@@ -680,9 +689,11 @@ async function entrarApp(comGoogle){
   if(comGoogle&&gToken){await initSheets();await carregarDados();}
   else{carregarLocal();renderAll();}
   // Mostrar menu admin se for o master
-  const navAcessos=document.getElementById('nav-acessos');
-  if(navAcessos&&gUser.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
-    navAcessos.style.display='flex';
+  if(gUser&&gUser.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+    const na=document.getElementById('nav-acessos');
+    if(na)na.style.cssText='display:flex!important';
+    // Criar planilha mestre se não existir
+    setTimeout(()=>inicializarPlanilhaMestre(),1000);
   }
   const _d=new Date();
   const _m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -693,16 +704,16 @@ async function entrarApp(comGoogle){
 function doLogout(){
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-screen').style.display='flex';
-  document.getElementById('inp-email').value='';
-  document.getElementById('inp-pass').value='';
   document.getElementById('login-msg').innerHTML='';
   gToken='';gUser='';sheetId='';
+  const na=document.getElementById('nav-acessos');
+  if(na)na.style.display='none';
 }
 
 function atualizarPills(){
   const set=(id,txtId,on,txt)=>{document.getElementById(id).className='gpill '+(on?'on':'off');document.getElementById(txtId).textContent=txt;};
   set('pill-drive','ptd',!!gToken,gToken?'Drive ✓':'Drive');
-  set('pill-sheets','pts',!!sheetId,sheetId?'Planilha ✓':'Planilha');
+  set('pill-sheets','pts',!!(sheetId||MASTER_SHEET_ID),(sheetId||MASTER_SHEET_ID)?'Planilha ✓':'Planilha');
   set('pill-cal','ptc',!!gToken,gToken?'Agenda ✓':'Agenda');
   if(gToken){document.getElementById('drive-st').textContent='Conectado: '+gUser;document.getElementById('btn-con-drive')&&(document.getElementById('btn-con-drive').style.display='none');}
 }
