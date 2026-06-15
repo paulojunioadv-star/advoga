@@ -520,7 +520,10 @@ tr:hover td{background:var(--bg3)}
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn btn-p" onclick="salvarConfig()"><i class="ti ti-check"></i> Salvar configurações</button>
     <button class="btn" onclick="exportarConfig()"><i class="ti ti-download"></i> Exportar configurações</button>
+    <button class="btn btn-g" onclick="exportarBackup()"><i class="ti ti-database-export"></i> Backup dos dados (JSON)</button>
+    <button class="btn btn-r" onclick="importarBackup()"><i class="ti ti-database-import"></i> Restaurar backup</button>
   </div>
+  <input type="file" id="backup-import-input" accept=".json" style="display:none" onchange="processarImportBackup(this)">
 </div>
 
     </div><!-- /content -->
@@ -540,7 +543,11 @@ tr:hover td{background:var(--bg3)}
 <script>
 // ══ CONSTANTES ══
 const CLIENT_ID   = '450674636978-4sbh730q75m49i95a2t10sb23nnq4974.apps.googleusercontent.com';
-const ADMIN_EMAIL = 'paulojunio.adv@gmail.com';
+// ► Para adicionar mais admins, basta incluir o e-mail no array abaixo
+const ADMINS = ['paulojunio.adv@gmail.com'];
+const ADMIN_EMAIL = ADMINS[0]; // compatibilidade retroativa
+// ► Se quiser fixar o ID da planilha mestre (recomendado), coloque aqui após criar:
+const MASTER_SHEET_FIXED = '1dROOprrj7zrSLnut_myGESQ4Yo0VMJxuoLFdjaY-EMQ';
 const LS_DB    = 'advoga_db';
 const LS_CFG   = 'advoga_cfg';
 const LS_SHEET = 'advoga_sheet_id';
@@ -613,7 +620,7 @@ function loginGoogle(){
         const ud=await ui.json();
         gUser=ud.email||'';
         localStorage.setItem(LS_USER,gUser);
-        if(gUser.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+        if(ADMINS.includes(gUser.toLowerCase())){
           await inicializarPlanilhaMestre();
           g('nav-acessos').style.display='flex';
           await entrarApp(true);
@@ -633,6 +640,8 @@ function loginGoogle(){
 }
 
 async function inicializarPlanilhaMestre(){
+  // Se há um ID fixo configurado, usa ele diretamente
+  if(MASTER_SHEET_FIXED){ MASTER_SHEET_ID=MASTER_SHEET_FIXED; localStorage.setItem(LS_MASTER,MASTER_SHEET_ID); return; }
   MASTER_SHEET_ID=localStorage.getItem(LS_MASTER)||'';
   if(MASTER_SHEET_ID){
     try{ const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID,{headers:{Authorization:'Bearer '+gToken}}); if(r.ok)return; }catch(e){}
@@ -870,11 +879,34 @@ function renderProcessos(){
 
 function renderTarefas(){
   const prior={alta:'br',media:'ba',baixa:'bg'};
-  g('tar-body').innerHTML=db.tarefas.map(t=>`
-    <tr><td>${t.titulo||'—'}</td><td>${t.cliente||'—'}</td><td>${fmtDate(t.prazo)||'—'}</td>
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  function prazoInfo(prazo, status){
+    if(!prazo||status==='concluida') return {html:fmtDate(prazo)||'—', cls:''};
+    const d=new Date(prazo+'T00:00:00');
+    const diff=Math.round((d-hoje)/864e5);
+    let cls=''; let suf='';
+    if(diff<0){ cls='style="color:var(--red);font-weight:600"'; suf=` <span class="badge br">${Math.abs(diff)}d atraso</span>`; }
+    else if(diff===0){ cls='style="color:var(--amber);font-weight:600"'; suf=` <span class="badge ba">Hoje</span>`; }
+    else if(diff<=3){ cls='style="color:var(--amber)"'; suf=` <span class="badge ba">em ${diff}d</span>`; }
+    return {html:`<span ${cls}>${fmtDate(prazo)}${suf}</span>`, cls};
+  }
+  const tarefasOrdenadas=[...db.tarefas].sort((a,b)=>{
+    // Concluídas por último
+    if(a.status==='concluida'&&b.status!=='concluida') return 1;
+    if(b.status==='concluida'&&a.status!=='concluida') return -1;
+    // Sem prazo por último
+    if(!a.prazo&&b.prazo) return 1;
+    if(a.prazo&&!b.prazo) return -1;
+    if(a.prazo&&b.prazo) return a.prazo.localeCompare(b.prazo);
+    return 0;
+  });
+  g('tar-body').innerHTML=tarefasOrdenadas.map(t=>{
+    const pi=prazoInfo(t.prazo, t.status);
+    return `<tr><td>${t.titulo||'—'}</td><td>${t.cliente||'—'}</td><td>${pi.html}</td>
     <td><span class="badge ${prior[t.prioridade]||'bb'}">${t.prioridade||'—'}</span></td>
     <td><span class="badge ${t.status==='concluida'?'bg':t.status==='pendente'?'ba':'bb'}">${t.status||'—'}</span></td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('tarefa','${t.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('tarefas','${t.id}',salvarTarefas)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(6,'checkbox','Nenhuma tarefa.');
+    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('tarefa','${t.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('tarefas','${t.id}',salvarTarefas)"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||emptyRow(6,'checkbox','Nenhuma tarefa.');
 }
 
 function renderFinanceiro(){
@@ -1369,6 +1401,39 @@ async function unirPDFs(){
   finally{hideLoading();}
 }
 
+// ══ BACKUP ══
+function exportarBackup(){
+  const backup={ versao:'1.0', data: new Date().toISOString(), db, cfg };
+  const json=JSON.stringify(backup, null, 2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const dt=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  a.href=url; a.download='advoga_backup_'+dt+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Backup exportado com sucesso!','ok');
+}
+function importarBackup(){ g('backup-import-input').click(); }
+function processarImportBackup(input){
+  const file=input.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const bk=JSON.parse(e.target.result);
+      if(!bk.db||!bk.db.clientes) throw new Error('Arquivo inválido.');
+      if(!confirm('Isso irá sobrescrever todos os dados locais. Confirmar restauração?')) return;
+      db=bk.db;
+      if(bk.cfg) cfg=bk.cfg;
+      localStorage.setItem(LS_DB,JSON.stringify(db));
+      if(bk.cfg) localStorage.setItem(LS_CFG,JSON.stringify(cfg));
+      renderAll(); carregarConfig(); toast('Backup restaurado com sucesso!','ok');
+    }catch(err){ toast('Erro ao importar: '+err.message,'err'); }
+  };
+  reader.readAsText(file);
+  input.value=''; // reset para permitir reimportar o mesmo arquivo
+}
+
 // ══ ACESSOS ══
 async function renderAcessos(){
   if(!MASTER_SHEET_ID){MASTER_SHEET_ID=localStorage.getItem(LS_MASTER)||'';}
@@ -1423,7 +1488,7 @@ function copiarLink(){
     gUser=savedUser;
     sheetId=savedSheet||'';
     MASTER_SHEET_ID=localStorage.getItem(LS_MASTER)||'';
-    if(gUser.toLowerCase()===ADMIN_EMAIL.toLowerCase())
+    if(ADMINS.includes(gUser.toLowerCase()))
       g('nav-acessos').style.display='flex';
     g('login-screen').style.display='none';
     g('app').classList.add('visible');
