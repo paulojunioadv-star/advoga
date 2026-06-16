@@ -384,7 +384,7 @@ tr:hover td{background:var(--bg3)}
 <div class="panel" id="p-clientes">
   <div class="card">
     <div class="ch"><span class="ct">Clientes</span><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" placeholder="Buscar..." style="border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;font-size:12px;outline:none;width:160px" oninput="filtrarLista('cli-body',this.value)"><button class="btn" onclick="abrirImportCSV()" title="Importar CSV"><i class="ti ti-upload"></i> Importar</button><button class="btn btn-p" onclick="openModal('cliente')"><i class="ti ti-plus"></i> Novo</button></div></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th>Área</th><th>Telefone</th><th>E-mail</th><th>Status</th><th>Ações</th></tr></thead><tbody id="cli-body"></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Cliente / CPF</th><th>Telefone / WhatsApp</th><th>Drive</th><th>Status</th><th>Processos</th><th>Ações</th></tr></thead><tbody id="cli-body"></tbody></table></div>
   </div>
 </div>
 
@@ -491,9 +491,9 @@ tr:hover td{background:var(--bg3)}
 <div class="panel" id="p-drive">
   <div class="card"><div class="ch"><span class="ct">Google Drive</span><button class="btn btn-p" onclick="criarTodasPastas()"><i class="ti ti-folder-plus"></i> Criar todas as pastas</button></div>
     <div style="padding:16px">
-      <div id="drive-st-full" style="font-size:13px;color:var(--text2);margin-bottom:12px">Conecte o Google para acessar o Drive.</div>
-      <div id="drive-pastas"></div>
+      <div id="drive-st-full" style="font-size:13px;color:var(--text2);margin-bottom:12px;background:var(--bg3);border-radius:var(--r);padding:12px">Conecte o Google para acessar o Drive.</div>
     </div>
+    <div class="tbl-wrap"><div id="drive-pastas"></div></div>
   </div>
 </div>
 
@@ -655,9 +655,9 @@ tr:hover td{background:var(--bg3)}
     <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Acesse <a href="https://autentique.com.br" target="_blank" style="color:var(--blue);font-weight:600">autentique.com.br</a> → Configurações → Integrações → Copie seu token de API.</div>
     <div class="fg"><label class="fl">Token de API</label><input class="fi" id="cfg-autentique" placeholder="seu-token-aqui" type="password"></div>
   </div>
-  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-robot"></i> Claude IA — Assistente Jurídico</div>
-    <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Acesse <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue);font-weight:600">console.anthropic.com</a> → API Keys → Crie uma chave. Custo médio: R$0,10 por consulta.</div>
-    <div class="fg"><label class="fl">Anthropic API Key</label><input class="fi" id="cfg-claude-key" placeholder="sk-ant-..." type="password"></div>
+  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-robot"></i> Gemini IA — Assistente Jurídico (Gratuito)</div>
+    <div style="background:var(--green-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--green-text)"><i class="ti ti-check"></i> <strong>100% gratuito!</strong> Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--green);font-weight:600">aistudio.google.com/app/apikey</a> → "Create API Key" → cole aqui. Sem cartão de crédito.</div>
+    <div class="fg"><label class="fl">Google Gemini API Key</label><input class="fi" id="cfg-claude-key" placeholder="AIza..." type="password"></div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn btn-p" onclick="salvarConfig()"><i class="ti ti-check"></i> Salvar configurações</button>
@@ -687,7 +687,7 @@ tr:hover td{background:var(--bg3)}
     <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center;gap:10px">
         <i class="ti ti-robot" style="font-size:20px;color:var(--purple)"></i>
-        <div><div style="font-weight:700;font-size:15px">Assistente Jurídico IA</div><div style="font-size:11px;color:var(--text3)">Powered by Claude · Anthropic</div></div>
+        <div><div style="font-weight:700;font-size:15px">Assistente Jurídico IA</div><div style="font-size:11px;color:var(--text3)">Powered by Gemini · Google (Gratuito)</div></div>
       </div>
       <button class="btn" onclick="fecharIA()"><i class="ti ti-x"></i></button>
     </div>
@@ -703,7 +703,7 @@ tr:hover td{background:var(--bg3)}
         <textarea id="ia-input" class="fi" rows="2" placeholder="Descreva o caso, faça uma pergunta jurídica..." style="flex:1;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarIA()}"></textarea>
         <button class="btn btn-p" onclick="enviarIA()" style="align-self:flex-end;padding:8px 14px"><i class="ti ti-send"></i></button>
       </div>
-      <div style="font-size:10px;color:var(--text3);margin-top:6px"><i class="ti ti-shield-lock"></i> Suas mensagens não são armazenadas. Configure a chave em Configurações → Claude IA.</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:6px"><i class="ti ti-shield-lock"></i> Suas mensagens não são armazenadas. Configure a chave em Configurações → Gemini IA.</div>
     </div>
   </div>
 </div>
@@ -880,7 +880,7 @@ async function sheetsReq(method,path,body){
 
 const ABA_KEYS={
   Clientes: 'id,nome,cpf,nascimento,rg,telefone,email,profissao,estadoCivil,rua,bairro,cep,cidade,estado,area,status,obs,driveFolderId'.split(','),
-  Processos:'id,numero,assunto,cliente,vara,status,prazo,obs'.split(','),
+  Processos:'id,numero,assunto,cliente,vara,status,prazo,obs,area'.split(','),
   Tarefas:  'id,titulo,cliente,prazo,prioridade,status,obs'.split(','),
   Financeiro:'id,descricao,cliente,valor,vencimento,status,tipo'.split(','),
   Leads:    'id,nome,telefone,email,area,stage,obs'.split(','),
@@ -1099,11 +1099,40 @@ function renderDash(){
 }
 
 function renderClientes(){
-  g('cli-body').innerHTML=db.clientes.map(c=>`
-    <tr><td><div class="fr"><div class="av ${avClass(c.nome)}">${initials(c.nome)}</div><div><div>${c.nome}</div><div style="font-size:11px;color:var(--text3)">${c.cpf||''}</div></div></div></td>
-    <td><span class="badge bb">${c.area||'—'}</span></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td>
-    <td><span class="badge ${c.status==='ativo'?'bg':'ba'}">${c.status||'—'}</span></td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('cliente','${c.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('clientes','${c.id}',salvarClientes)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
+  renderLimitBar('cli-limit-bar','clientes','Clientes');
+  g('cli-body').innerHTML=db.clientes.map(c=>{
+    const tel=c.telefone||'';
+    const waNum=tel.replace(/\D/g,'');
+    const telCell=tel
+      ?('<div style="display:flex;align-items:center;gap:6px">'+tel
+        +'<a href="https://wa.me/55'+waNum+'" target="_blank" title="Abrir WhatsApp" '
+        +'style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;'
+        +'border-radius:50%;background:#25d366;color:#fff;font-size:13px;flex-shrink:0;text-decoration:none">'
+        +'<i class="ti ti-brand-whatsapp"></i></a></div>')
+      :'—';
+    const driveCell=c.driveFolderId
+      ?('<div style="display:flex;gap:4px">'
+        +'<a class="btn" href="https://drive.google.com/drive/folders/'+c.driveFolderId+'" target="_blank" title="Abrir pasta">'
+        +'<i class="ti ti-folder-open"></i> Abrir</a>'
+        +'<button class="btn" onclick="uploadParaCliente(\'' + c.id + '\')" title="Upload arquivo">'
+        +'<i class="ti ti-upload"></i></button></div>')
+      :('<button class="btn" onclick="criarPastaEAtualizar(\'' + c.id + '\')" title="Criar pasta no Drive">'
+        +'<i class="ti ti-folder-plus"></i> Criar</button>');
+    const nProc=db.processos.filter(p=>p.cliente===c.nome).length;
+    return '<tr>'
+      +'<td><div class="fr"><div class="av '+avClass(c.nome)+'">'+initials(c.nome)+'</div>'
+      +'<div><div style="font-weight:600">'+he(c.nome)+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+(c.cpf||'')+'</div></div></div></td>'
+      +'<td>'+telCell+'</td>'
+      +'<td>'+driveCell+'</td>'
+      +'<td><span class="badge '+(c.status==='ativo'?'bg':'ba')+'">'+(c.status||'—')+'</span></td>'
+      +'<td style="text-align:center;font-weight:700;color:'+(nProc>0?'var(--blue-text)':'var(--text3)')+'">'+nProc+'</td>'
+      +'<td><div style="display:flex;gap:3px">'
+      +'<button class="btn" onclick="exportarPDFCliente(\''+ c.nome +'\')" title="Exportar PDF"><i class="ti ti-file-type-pdf"></i></button>'
+      +'<button class="btn" onclick="editItem(\'cliente\',\''+ c.id +'\')" title="Editar"><i class="ti ti-edit"></i></button>'
+      +'<button class="btn btn-r" onclick="delItem(\'clientes\',\''+ c.id +'\',salvarClientes)" title="Excluir"><i class="ti ti-trash"></i></button>'
+      +'</div></td></tr>';
+  }).join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
 }
 
 function renderProcessos(){
@@ -1457,13 +1486,79 @@ async function kbSalvarModal(){
 }
 
 function renderDrive(){
-  const i=g('drive-st-full'); if(i) i.textContent=gToken?'Drive conectado. Gerencie as pastas dos clientes abaixo.':'Conecte o Google para acessar o Drive.';
-  g('drive-pastas').innerHTML=db.clientes.slice(0,15).map(c=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <i class="ti ti-folder" style="color:var(--amber)"></i>
-      <span style="font-size:13px;flex:1">${c.nome}</span>
-      ${c.driveFolderId?'<span class="badge bg">✓ Pasta criada</span>':`<button class="btn" onclick="criarPastaEAtualizar('${c.id}')"><i class="ti ti-folder-plus"></i> Criar</button>`}
-    </div>`).join('')||'<div style="font-size:13px;color:var(--text3)">Nenhum cliente cadastrado.</div>';
+  const el=g('drive-st-full');
+  if(el){
+    if(gToken){
+      // Find root CRM folder ID from any client (all share same root)
+      const rootBtn=window._crmRootFolderId
+        ?'<a class="btn btn-p" href="https://drive.google.com/drive/folders/'+window._crmRootFolderId+'" target="_blank" style="margin-left:auto"><i class="ti ti-external-link"></i> Abrir pasta raiz</a>'
+        :'<button class="btn" onclick="abrirPastaRaizDrive()" style="margin-left:auto"><i class="ti ti-folder-open"></i> Abrir pasta raiz</button>';
+      el.innerHTML='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+        +'<i class="ti ti-brand-google-drive" style="font-size:18px;color:#1a6cf5"></i>'
+        +'<div><div style="font-weight:600;font-size:13px">Drive conectado: '+gUser+'</div>'
+        +'<div style="font-size:11px;color:var(--text3)">Pastas automáticas por cliente no Google Drive.</div></div>'
+        +rootBtn+'</div>';
+    } else {
+      el.innerHTML='<div style="font-size:13px;color:var(--text3)">Conecte o Google para acessar o Drive.</div>';
+    }
+  }
+  const tbl=g('drive-pastas');
+  if(!tbl)return;
+  tbl.innerHTML='<table><thead><tr><th>Cliente</th><th>Pasta no Drive</th><th>Ações</th></tr></thead><tbody>'
+    +db.clientes.map(c=>{
+      const folderPath='Advoga CRM / Clientes / '+c.nome;
+      const driveActions=c.driveFolderId
+        ?('<a class="btn" href="https://drive.google.com/drive/folders/'+c.driveFolderId+'" target="_blank"><i class="ti ti-folder-open"></i> Abrir</a>'
+          +'<button class="btn" onclick="uploadParaCliente(' + c.id + '" title="Upload"><i class="ti ti-upload"></i> Upload</button>')
+        :'<button class="btn" onclick="criarPastaEAtualizar(\''+ c.id +'\')" title="Criar pasta"><i class="ti ti-folder-plus"></i> Criar pasta</button>';
+      return '<tr>'
+        +'<td><div class="fr"><div class="av '+avClass(c.nome)+'">'+initials(c.nome)+'</div><span>'+he(c.nome)+'</span></div></td>'
+        +'<td>'+(c.driveFolderId
+          ?('<a href="https://drive.google.com/drive/folders/'+c.driveFolderId+'" target="_blank" style="color:var(--blue);text-decoration:none;font-size:12px">'+folderPath+'</a>')
+          :'<span style="color:var(--text3);font-size:12px">Pasta não criada</span>')+'</td>'
+        +'<td><div style="display:flex;gap:4px">'+driveActions+'</div></td>'
+        +'</tr>';
+    }).join('')+'</tbody></table>'
+    ||'<div style="font-size:13px;color:var(--text3);padding:16px">Nenhum cliente cadastrado.</div>';
+}
+
+async function abrirPastaRaizDrive(){
+  if(!gToken){toast('Conecte o Google primeiro.','err');return;}
+  showLoading('Localizando pasta raiz...');
+  try{
+    const rootId=await buscarOuCriarPasta('Advoga CRM',null);
+    if(rootId){window._crmRootFolderId=rootId;window.open('https://drive.google.com/drive/folders/'+rootId,'_blank');renderDrive();}
+  }catch(e){toast('Erro: '+e.message,'err');}
+  finally{hideLoading();}
+}
+
+async function uploadParaCliente(clienteId){
+  const c=db.clientes.find(x=>x.id===clienteId);
+  if(!c){toast('Cliente não encontrado.','err');return;}
+  if(!c.driveFolderId){
+    const fid=await criarPastaCliente(c.nome);
+    if(!fid){toast('Erro ao criar pasta.','err');return;}
+    c.driveFolderId=fid; await salvar(salvarClientes);
+  }
+  const input=document.createElement('input');
+  input.type='file'; input.multiple=true;
+  input.onchange=async e=>{
+    const files=[...e.target.files]; if(!files.length)return;
+    showLoading('Enviando '+files.length+' arquivo(s)...');
+    let ok=0;
+    for(const file of files){
+      try{
+        const form=new FormData();
+        form.append('metadata',new Blob([JSON.stringify({name:file.name,parents:[c.driveFolderId]})],{type:'application/json'}));
+        form.append('file',file);
+        const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{Authorization:'Bearer '+gToken},body:form});
+        if(r.ok)ok++;
+      }catch(ex){}
+    }
+    hideLoading();
+    toast(ok+'/'+files.length+' arquivo(s) enviado(s) para pasta de '+c.nome+' ✓','ok');
+  };
+  input.click();
 }
 
 // ══ AGENDA ══
@@ -1598,8 +1693,9 @@ const modalForms={
   },
   processo:()=>{
     const p=mEditId?db.processos.find(x=>x.id===mEditId):{};
-    return `<div class="fg"><label class="fl">Número do processo</label>
-    <input class="fi" id="f0" placeholder="0000000-00.0000.0.00.0000" value="${p.numero||''}"></div>
+    const areas=['Previdenciário','Família','Trabalhista','Cível','Criminal','Tributário','Empresarial','Consumidor','Outro'];
+    return `<div class="fgrid"><div class="fg"><label class="fl">Número do processo</label><input class="fi" id="f0" placeholder="0000000-00.0000.0.00.0000" value="${p.numero||''}"></div>
+    </div><div class="fg"><label class="fl">Área do direito</label><select class="fi" id="f-area-proc">${areas.map(a=>`<option ${(p.area||'Cível')===a?'selected':''} value="${a}">${a}</option>`).join('')}</select></div></div>
     <div class="fg"><label class="fl">Assunto *</label><input class="fi" id="f1" value="${p.assunto||''}"></div>
     <div class="fgrid"><div class="fg"><label class="fl">Cliente</label><select class="fi" id="f2"><option value="">—</option>${db.clientes.map(c=>`<option ${p.cliente===c.nome?'selected':''}>${c.nome}</option>`).join('')}</select></div><div class="fg"><label class="fl">Vara/Juízo</label><input class="fi" id="f3" value="${p.vara||''}"></div></div>
     <div class="fgrid"><div class="fg"><label class="fl">Status</label><select class="fi" id="f4"><option ${p.status==='andamento'||!p.status?'selected':''}>andamento</option><option ${p.status==='encerrado'?'selected':''}>encerrado</option><option ${p.status==='arquivado'?'selected':''}>arquivado</option></select></div><div class="fg"><label class="fl">Próximo prazo</label><input class="fi" type="date" id="f6" value="${p.prazo||''}"></div></div>
@@ -1676,7 +1772,7 @@ async function saveModal(){
       await salvar(salvarClientes);
     }else if(modalType==='processo'){
       if(!g('f1').value.trim()){toast('Assunto é obrigatório.','err');return;}
-      const d={numero:g('f0').value,assunto:g('f1').value,cliente:g('f2').value,vara:g('f3').value,status:g('f4').value,prazo:g('f6').value,obs:g('f5').value};
+      const d={numero:g('f0').value,assunto:g('f1').value,cliente:g('f2').value,vara:g('f3').value,status:g('f4').value,prazo:g('f6').value,obs:g('f5').value,area:g('f-area-proc')?.value||'Cível'};
       if(mEditId)Object.assign(db.processos.find(x=>x.id===mEditId),d);
       else db.processos.push({id:genId(),...d});
       await salvar(salvarProcessos);
@@ -2408,7 +2504,7 @@ function abrirAssistenteIA(){
     msgs.innerHTML=`<div style="background:var(--purple-bg);border-radius:var(--r);padding:12px;font-size:12px;color:var(--purple-text)">
       <i class="ti ti-robot"></i> <strong>Olá, Dr. ${cfg.nome?cfg.nome.split(' ')[1]||cfg.nome.split(' ')[0]:'Advogado'}!</strong><br>
       Sou seu assistente jurídico IA. Posso ajudar com estratégias processuais, minutas de petições, análise de prazos e muito mais.<br>
-      <small style="opacity:.8">${cfg.claudeKey?'✓ API configurada':'⚠ Configure sua chave em Configurações → Claude IA para usar este recurso.'}</small>
+      <small style="opacity:.8">${cfg.claudeKey?'✓ Gemini API configurada — gratuita!':'⚠ Configure sua chave Gemini em Configurações → Gemini IA. É gratuito!'}</small>
     </div>`;
   }
 }
@@ -2428,42 +2524,57 @@ function iaAddMsg(role,txt){
 async function enviarIA(){
   carregarConfig();
   const inp=g('ia-input'); if(!inp||!inp.value.trim())return;
-  if(!cfg.claudeKey){toast('Configure sua chave Claude em Configurações → Assistente IA.','err');return;}
+  if(!cfg.claudeKey){toast('Configure sua chave Gemini em Configurações → Gemini IA (é gratuito!).','err');return;}
   const pergunta=inp.value.trim(); inp.value='';
   iaAddMsg('user',pergunta);
-  _iaHistorico.push({role:'user',content:pergunta});
+  _iaHistorico.push({role:'user',parts:[{text:pergunta}]});
 
   // Loading
   const msgs=g('ia-msgs');
   const loadDiv=document.createElement('div');
   loadDiv.id='ia-loading';
   loadDiv.style.cssText='display:flex;gap:8px;align-items:center;color:var(--text3);font-size:12px;padding:4px 0';
-  loadDiv.innerHTML='<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Consultando IA...';
+  loadDiv.innerHTML='<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Consultando Gemini...';
   msgs.appendChild(loadDiv);
   msgs.scrollTop=msgs.scrollHeight;
 
-  // Contexto do CRM
-  const contexto=`Você é um assistente jurídico integrado ao Organiza CRM, usado pelo advogado ${cfg.nome||'Dr.'} (${cfg.oab||'OAB'}), com escritório em ${cfg.cidade||'Goiás'}.
-O CRM tem ${db.clientes.length} clientes, ${db.processos.length} processos e ${db.tarefas.filter(t=>t.status!=='concluida').length} tarefas pendentes.
-Responda de forma objetiva, profissional e em português brasileiro. Cite legislação e jurisprudência relevante quando aplicável.`;
+  // Contexto jurídico
+  const sistemaPrompt='Você é um assistente jurídico integrado ao Organiza CRM, usado pelo advogado '
+    +(cfg.nome||'Dr.')+' ('+(cfg.oab||'OAB')+'), com escritório em '+(cfg.cidade||'Goiás')+'. '
+    +'O CRM tem '+db.clientes.length+' clientes, '+db.processos.length+' processos e '
+    +db.tarefas.filter(t=>t.status!=='concluida').length+' tarefas pendentes. '
+    +'Responda de forma objetiva, profissional e em português brasileiro. '
+    +'Cite legislação e jurisprudência relevante quando aplicável. '
+    +'Seja direto e prático, focado na realidade do advogado brasileiro.';
+
+  // Gemini API — formato de histórico diferente do Claude
+  // Gemini usa {role:'user'|'model', parts:[{text:'...'}]}
+  const historico=_iaHistorico.slice(-10);
 
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':cfg.claudeKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1024,
-        system:contexto,
-        messages:_iaHistorico.slice(-10) // últimas 10 mensagens de contexto
-      })
-    });
+    const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+cfg.claudeKey;
+    const body={
+      system_instruction:{parts:[{text:sistemaPrompt}]},
+      contents:historico,
+      generationConfig:{maxOutputTokens:1024,temperature:0.7}
+    };
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json();
-    const resp=d.content?.[0]?.text||d.error?.message||'Sem resposta.';
+
+    if(d.error){throw new Error(d.error.message||'Erro Gemini API');}
+
+    const resp=d.candidates?.[0]?.content?.parts?.[0]?.text||'Sem resposta da IA.';
     loadDiv.remove();
-    _iaHistorico.push({role:'assistant',content:resp});
+    _iaHistorico.push({role:'model',parts:[{text:resp}]});
     iaAddMsg('assistant',resp);
   }catch(e){
     loadDiv.remove();
-    iaAddMsg('assistant','Erro ao conectar com a IA: '+e.message);
+    const msg=e.message||'Erro desconhecido';
+    if(msg.includes('API_KEY_INVALID')||msg.includes('API key')){
+      iaAddMsg('assistant','❌ Chave Gemini inválida. Acesse aistudio.google.com/app/apikey e copie uma chave válida.');
+    } else {
+      iaAddMsg('assistant','Erro ao conectar: '+msg);
+    }
   }
 }
 
