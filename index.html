@@ -1099,50 +1099,71 @@ function renderDash(){
 }
 
 function renderClientes(){
-  renderLimitBar('cli-limit-bar','clientes','Clientes');
-  g('cli-body').innerHTML=db.clientes.map(c=>{
-    const tel=c.telefone||'';
-    const waNum=tel.replace(/\D/g,'');
-    const telCell=tel
+  if(typeof renderLimitBar==='function') renderLimitBar('cli-limit-bar','clientes','Clientes');
+  const rows=db.clientes.map(function(c){
+    var tel=c.telefone||'';
+    var waNum=tel.replace(/\D/g,'');
+    var telCell=tel
       ?('<div style="display:flex;align-items:center;gap:6px">'+tel
-        +'<a href="https://wa.me/55'+waNum+'" target="_blank" title="Abrir WhatsApp" '
-        +'style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;'
+        +'<a href="https://wa.me/55'+waNum+'" target="_blank" title="WhatsApp"'
+        +' style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;'
         +'border-radius:50%;background:#25d366;color:#fff;font-size:13px;flex-shrink:0;text-decoration:none">'
         +'<i class="ti ti-brand-whatsapp"></i></a></div>')
       :'—';
-    const driveCell=c.driveFolderId
+    var driveCell=c.driveFolderId
       ?('<div style="display:flex;gap:4px">'
-        +'<a class="btn" href="https://drive.google.com/drive/folders/'+c.driveFolderId+'" target="_blank" title="Abrir pasta">'
+        +'<a class="btn" href="https://drive.google.com/drive/folders/'+c.driveFolderId+'" target="_blank">'
         +'<i class="ti ti-folder-open"></i> Abrir</a>'
-        +'<button class="btn" onclick="uploadParaCliente(\'' + c.id + '\')" title="Upload arquivo">'
+        +'<button class="btn" data-cid="'+c.id+'" onclick="uploadParaCliente(this.dataset.cid)">'
         +'<i class="ti ti-upload"></i></button></div>')
-      :('<button class="btn" onclick="criarPastaEAtualizar(\'' + c.id + '\')" title="Criar pasta no Drive">'
+      :('<button class="btn" data-cid="'+c.id+'" onclick="criarPastaEAtualizar(this.dataset.cid)">'
         +'<i class="ti ti-folder-plus"></i> Criar</button>');
-    const nProc=db.processos.filter(p=>p.cliente===c.nome).length;
+    var nProc=db.processos.filter(function(p){return p.cliente===c.nome;}).length;
+    var statusBadge='<span class="badge '+(c.status==='ativo'?'bg':'ba')+'">'+(c.status||'—')+'</span>';
     return '<tr>'
       +'<td><div class="fr"><div class="av '+avClass(c.nome)+'">'+initials(c.nome)+'</div>'
       +'<div><div style="font-weight:600">'+he(c.nome)+'</div>'
       +'<div style="font-size:11px;color:var(--text3)">'+(c.cpf||'')+'</div></div></div></td>'
       +'<td>'+telCell+'</td>'
       +'<td>'+driveCell+'</td>'
-      +'<td><span class="badge '+(c.status==='ativo'?'bg':'ba')+'">'+(c.status||'—')+'</span></td>'
+      +'<td>'+statusBadge+'</td>'
       +'<td style="text-align:center;font-weight:700;color:'+(nProc>0?'var(--blue-text)':'var(--text3)')+'">'+nProc+'</td>'
       +'<td><div style="display:flex;gap:3px">'
-      +'<button class="btn" onclick="exportarPDFCliente(\''+ c.nome +'\')" title="Exportar PDF"><i class="ti ti-file-type-pdf"></i></button>'
-      +'<button class="btn" onclick="editItem(\'cliente\',\''+ c.id +'\')" title="Editar"><i class="ti ti-edit"></i></button>'
-      +'<button class="btn btn-r" onclick="delItem(\'clientes\',\''+ c.id +'\',salvarClientes)" title="Excluir"><i class="ti ti-trash"></i></button>'
+      +'<button class="btn" data-nome="'+c.nome+'" onclick="exportarPDFCliente(this.dataset.nome)" title="PDF">'
+      +'<i class="ti ti-file-type-pdf"></i></button>'
+      +'<i class="ti ti-file-type-pdf"></i></button>'
+      +'<button class="btn" data-cid="'+c.id+'" onclick="editItem(\'cliente\',this.dataset.cid)" title="Editar">'
+      +'<i class="ti ti-edit"></i></button>'
+      +'<i class="ti ti-edit"></i></button>'
+      +'<button class="btn btn-r" data-cid="'+c.id+'" onclick="delItem(\'clientes\',this.dataset.cid,salvarClientes)" title="Excluir">'
+      +'<i class="ti ti-trash"></i></button>'
+      +'<i class="ti ti-trash"></i></button>'
       +'</div></td></tr>';
-  }).join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
+  });
+  g('cli-body').innerHTML=rows.join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
 }
-
 function renderProcessos(){
-  g('proc-body').innerHTML=db.processos.map(p=>`
-    <tr><td><code style="font-size:11px">${p.numero||'—'}</code></td><td>${p.assunto||'—'}</td><td>${p.cliente||'—'}</td><td>${p.vara||'—'}</td>
-    <td><span class="badge ${p.status==='andamento'?'bg':p.status==='arquivado'?'ba':'bb'}">${p.status||'—'}</span></td>
-    <td>${fmtDate(p.prazo)||'—'}</td>
-    <td><div style="display:flex;gap:4px"><button class="btn" onclick="editItem('processo','${p.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-r" onclick="delItem('processos','${p.id}',salvarProcessos)"><i class="ti ti-trash"></i></button></div></td></tr>`).join('')||emptyRow(7,'briefcase','Nenhum processo cadastrado.');
+  var rows=db.processos.map(function(p){
+    var stCor=p.status==='andamento'?'bg':p.status==='arquivado'?'ba':'bb';
+    var cli=db.clientes.find(function(c){return c.nome===p.cliente;});
+    var tel=cli&&cli.telefone?cli.telefone:'';
+    var waBtn=tel?('<a class="wbtn" href="https://wa.me/55'+tel.replace(/\D/g,'')+'" target="_blank" style="width:22px;height:22px;font-size:11px"><i class="ti ti-brand-whatsapp"></i></a>'):'';
+    var areaBadge=p.area?('<span class="badge bb" style="font-size:10px">'+he(p.area)+'</span>'):'';
+    return '<tr>'
+      +'<td><code style="font-size:11px">'+(p.numero||'—')+'</code></td>'
+      +'<td>'+(p.assunto||'—')+'</td>'
+      +'<td>'+(p.cliente||'—')+'</td>'
+      +'<td>'+(p.vara||'—')+'</td>'
+      +'<td><span class="badge '+stCor+'">'+(p.status||'—')+'</span></td>'
+      +'<td>'+(p.area?areaBadge:'—')+'</td>'
+      +'<td>'+(p.prazo?fmtDate(p.prazo):'—')+'</td>'
+      +'<td><div style="display:flex;gap:3px;align-items:center">'+waBtn
+      +'<button class="btn" data-pid="'+p.id+'" onclick="editItem(\'processo\',this.dataset.pid)" title="Editar"><i class="ti ti-edit"></i></button>'
+      +'<button class="btn btn-r" data-pid="'+p.id+'" onclick="delItem(\'processos\',this.dataset.pid,salvarProcessos)" title="Excluir"><i class="ti ti-trash"></i></button>'
+      +'</div></td></tr>';
+  });
+  g('proc-body').innerHTML=rows.join('')||emptyRow(8,'briefcase','Nenhum processo cadastrado.');
 }
-
 function renderTarefas(){
   const prior={alta:'br',media:'ba',baixa:'bg'};
   g('tar-body').innerHTML=db.tarefas.map(t=>`
@@ -1509,7 +1530,7 @@ function renderDrive(){
       const folderPath='Advoga CRM / Clientes / '+c.nome;
       const driveActions=c.driveFolderId
         ?('<a class="btn" href="https://drive.google.com/drive/folders/'+c.driveFolderId+'" target="_blank"><i class="ti ti-folder-open"></i> Abrir</a>'
-          +'<button class="btn" onclick="uploadParaCliente(' + c.id + '" title="Upload"><i class="ti ti-upload"></i> Upload</button>')
+          +'<button class="btn" onclick="uploadParaCliente(this.dataset.cid)" data-cid="'+c.id+'" title="Upload"><i class="ti ti-upload"></i> Upload</button>')
         :'<button class="btn" onclick="criarPastaEAtualizar(\''+ c.id +'\')" title="Criar pasta"><i class="ti ti-folder-plus"></i> Criar pasta</button>';
       return '<tr>'
         +'<td><div class="fr"><div class="av '+avClass(c.nome)+'">'+initials(c.nome)+'</div><span>'+he(c.nome)+'</span></div></td>'
