@@ -655,9 +655,9 @@ tr:hover td{background:var(--bg3)}
     <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Acesse <a href="https://autentique.com.br" target="_blank" style="color:var(--blue);font-weight:600">autentique.com.br</a> → Configurações → Integrações → Copie seu token de API.</div>
     <div class="fg"><label class="fl">Token de API</label><input class="fi" id="cfg-autentique" placeholder="seu-token-aqui" type="password"></div>
   </div>
-  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-robot"></i> Gemini IA — Assistente Jurídico (Gratuito)</div>
-    <div style="background:var(--green-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--green-text)"><i class="ti ti-check"></i> <strong>100% gratuito!</strong> Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--green);font-weight:600">aistudio.google.com/app/apikey</a> → "Create API Key" → cole aqui. Sem cartão de crédito.</div>
-    <div class="fg"><label class="fl">Google Gemini API Key</label><input class="fi" id="cfg-claude-key" placeholder="AIza..." type="password"></div>
+  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-robot"></i> Groq IA — Assistente Jurídico (Gratuito)</div>
+    <div style="background:var(--green-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--green-text)"><i class="ti ti-check"></i> <strong>100% gratuito!</strong> Acesse <a href="https://console.groq.com/keys" target="_blank" style="color:var(--green);font-weight:600">console.groq.com/keys</a> → faça login com Google → "Create API Key" → cole aqui. Sem cartão, sem faturamento.</div>
+    <div class="fg"><label class="fl">Groq API Key</label><input class="fi" id="cfg-claude-key" placeholder="gsk_..." type="password"></div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn btn-p" onclick="salvarConfig()"><i class="ti ti-check"></i> Salvar configurações</button>
@@ -687,7 +687,7 @@ tr:hover td{background:var(--bg3)}
     <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center;gap:10px">
         <i class="ti ti-robot" style="font-size:20px;color:var(--purple)"></i>
-        <div><div style="font-weight:700;font-size:15px">Assistente Jurídico IA</div><div style="font-size:11px;color:var(--text3)">Powered by Gemini · Google (Gratuito)</div></div>
+        <div><div style="font-weight:700;font-size:15px">Assistente Jurídico IA</div><div style="font-size:11px;color:var(--text3)">Powered by Groq · Llama 3 (Gratuito)</div></div>
       </div>
       <button class="btn" onclick="fecharIA()"><i class="ti ti-x"></i></button>
     </div>
@@ -703,7 +703,7 @@ tr:hover td{background:var(--bg3)}
         <textarea id="ia-input" class="fi" rows="2" placeholder="Descreva o caso, faça uma pergunta jurídica..." style="flex:1;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarIA()}"></textarea>
         <button class="btn btn-p" onclick="enviarIA()" style="align-self:flex-end;padding:8px 14px"><i class="ti ti-send"></i></button>
       </div>
-      <div style="font-size:10px;color:var(--text3);margin-top:6px"><i class="ti ti-shield-lock"></i> Suas mensagens não são armazenadas. Configure a chave em Configurações → Gemini IA.</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:6px"><i class="ti ti-shield-lock"></i> Suas mensagens não são armazenadas. Configure a chave em Configurações → Groq IA.</div>
     </div>
   </div>
 </div>
@@ -1129,15 +1129,9 @@ function renderClientes(){
       +'<td>'+statusBadge+'</td>'
       +'<td style="text-align:center;font-weight:700;color:'+(nProc>0?'var(--blue-text)':'var(--text3)')+'">'+nProc+'</td>'
       +'<td><div style="display:flex;gap:3px">'
-      +'<button class="btn" data-nome="'+c.nome+'" onclick="exportarPDFCliente(this.dataset.nome)" title="PDF">'
-      +'<i class="ti ti-file-type-pdf"></i></button>'
-      +'<i class="ti ti-file-type-pdf"></i></button>'
-      +'<button class="btn" data-cid="'+c.id+'" onclick="editItem(\'cliente\',this.dataset.cid)" title="Editar">'
-      +'<i class="ti ti-edit"></i></button>'
-      +'<i class="ti ti-edit"></i></button>'
-      +'<button class="btn btn-r" data-cid="'+c.id+'" onclick="delItem(\'clientes\',this.dataset.cid,salvarClientes)" title="Excluir">'
-      +'<i class="ti ti-trash"></i></button>'
-      +'<i class="ti ti-trash"></i></button>'
+      +'<button class="btn" data-nome="'+c.nome+'" onclick="exportarPDFCliente(this.dataset.nome)" title="PDF"><i class="ti ti-file-type-pdf"></i></button>'
+      +'<button class="btn" data-cid="'+c.id+'" onclick="editItem(\'cliente\',this.dataset.cid)" title="Editar"><i class="ti ti-edit"></i></button>'
+      +'<button class="btn btn-r" data-cid="'+c.id+'" onclick="delItem(\'clientes\',this.dataset.cid,salvarClientes)" title="Excluir"><i class="ti ti-trash"></i></button>'
       +'</div></td></tr>';
   });
   g('cli-body').innerHTML=rows.join('')||emptyRow(6,'users','Nenhum cliente cadastrado.');
@@ -2525,7 +2519,7 @@ function abrirAssistenteIA(){
     msgs.innerHTML=`<div style="background:var(--purple-bg);border-radius:var(--r);padding:12px;font-size:12px;color:var(--purple-text)">
       <i class="ti ti-robot"></i> <strong>Olá, Dr. ${cfg.nome?cfg.nome.split(' ')[1]||cfg.nome.split(' ')[0]:'Advogado'}!</strong><br>
       Sou seu assistente jurídico IA. Posso ajudar com estratégias processuais, minutas de petições, análise de prazos e muito mais.<br>
-      <small style="opacity:.8">${cfg.claudeKey?'✓ Gemini API configurada — gratuita!':'⚠ Configure sua chave Gemini em Configurações → Gemini IA. É gratuito!'}</small>
+      <small style="opacity:.8">${cfg.claudeKey?'✓ Groq API configurada — gratuita!':'⚠ Configure sua chave Groq em Configurações → Groq IA. É gratuito!'}</small>
     </div>`;
   }
 }
@@ -2545,10 +2539,10 @@ function iaAddMsg(role,txt){
 async function enviarIA(){
   carregarConfig();
   const inp=g('ia-input'); if(!inp||!inp.value.trim())return;
-  if(!cfg.claudeKey){toast('Configure sua chave Gemini em Configurações → Gemini IA (é gratuito!).','err');return;}
+  if(!cfg.claudeKey){toast('Configure sua chave Groq em Configurações → Groq IA (é gratuito!).','err');return;}
   const pergunta=inp.value.trim(); inp.value='';
   iaAddMsg('user',pergunta);
-  _iaHistorico.push({role:'user',parts:[{text:pergunta}]});
+  _iaHistorico.push({role:'user',content:pergunta});
 
   // Loading
   const msgs=g('ia-msgs');
@@ -2568,31 +2562,35 @@ async function enviarIA(){
     +'Cite legislação e jurisprudência relevante quando aplicável. '
     +'Seja direto e prático, focado na realidade do advogado brasileiro.';
 
-  // Gemini API — formato de histórico diferente do Claude
-  // Gemini usa {role:'user'|'model', parts:[{text:'...'}]}
-  const historico=_iaHistorico.slice(-10);
+  // Groq API — OpenAI-compatible, gratuita
+  // Histórico no formato OpenAI: {role:'user'|'assistant', content:'...'}
+  const historico=_iaHistorico.slice(-10).map(function(m){
+    return {role:m.role==='model'?'assistant':m.role, content:m.content||''};
+  });
 
   try{
-    const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+cfg.claudeKey;
-    const body={
-      system_instruction:{parts:[{text:sistemaPrompt}]},
-      contents:historico,
-      generationConfig:{maxOutputTokens:1024,temperature:0.7}
-    };
-    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.claudeKey},
+      body:JSON.stringify({
+        model:'llama-3.3-70b-versatile',
+        messages:[{role:'system',content:sistemaPrompt},...historico],
+        max_tokens:1024,
+        temperature:0.7
+      })
+    });
     const d=await r.json();
-
-    if(d.error){throw new Error(d.error.message||'Erro Gemini API');}
-
-    const resp=d.candidates?.[0]?.content?.parts?.[0]?.text||'Sem resposta da IA.';
+    if(d.error){throw new Error(d.error.message||'Erro Groq API');}
+    const resp=d.choices?.[0]?.message?.content||'Sem resposta da IA.';
     loadDiv.remove();
-    _iaHistorico.push({role:'model',parts:[{text:resp}]});
+    _iaHistorico.push({role:'assistant',content:pergunta});
+    _iaHistorico[_iaHistorico.length-1]={role:'assistant',content:resp};
     iaAddMsg('assistant',resp);
   }catch(e){
     loadDiv.remove();
     const msg=e.message||'Erro desconhecido';
-    if(msg.includes('API_KEY_INVALID')||msg.includes('API key')){
-      iaAddMsg('assistant','❌ Chave Gemini inválida. Acesse aistudio.google.com/app/apikey e copie uma chave válida.');
+    if(msg.includes('401')||msg.includes('invalid_api_key')){
+      iaAddMsg('assistant','❌ Chave Groq inválida. Acesse console.groq.com/keys e crie uma chave válida. É gratuito!');
     } else {
       iaAddMsg('assistant','Erro ao conectar: '+msg);
     }
