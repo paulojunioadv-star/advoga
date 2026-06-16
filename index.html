@@ -2573,7 +2573,7 @@ async function enviarIA(){
   const historico=_iaHistorico.slice(-10);
 
   try{
-    const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+cfg.claudeKey;
+    const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+cfg.claudeKey;
     const body={
       system_instruction:{parts:[{text:sistemaPrompt}]},
       contents:historico,
