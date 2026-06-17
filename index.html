@@ -373,7 +373,6 @@ tr:hover td{background:var(--bg3)}
       <span class="topbar-t" id="ttitle">Dashboard</span>
       <span id="today-date" style="font-size:11px;color:var(--text3);flex-shrink:0"></span>
       <button class="btn" onclick="sincTudo()" title="Sincronizar"><i class="ti ti-refresh"></i></button>
-      <button class="btn btn-p" onclick="openNew()"><i class="ti ti-plus"></i> Novo</button>
     </div>
     <div class="content">
 
@@ -877,18 +876,39 @@ function toast(msg,tipo='ok'){
 }
 
 // ══ LOGIN / AUTH ══
+let _tokenClient=null;
+let _tokenRefreshTimer=null;
+let _tokenRefreshCallback=null;
+
 function loginGoogle(){
   g('login-msg').innerHTML='<p style="text-align:center;font-size:12px;color:var(--text2)">Conectando...</p>';
-  const client=google.accounts.oauth2.initTokenClient({
+  _tokenClient=google.accounts.oauth2.initTokenClient({
     client_id:CLIENT_ID,
     scope:'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email',
+    prompt:'',
     callback:async(r)=>{
       if(r.error){
+        // Se for refresh silencioso, não mostra erro na tela
+        if(_tokenRefreshCallback){_tokenRefreshCallback(false);_tokenRefreshCallback=null;return;}
         g('login-msg').innerHTML='<div class="blocked"><strong>Erro no login.</strong> Tente novamente.</div>';
         return;
       }
+      const isRefresh=!!gToken; // já tinha token = é renovação
       gToken=r.access_token;
-      localStorage.setItem(LS_TEXP, Date.now()+(r.expires_in||3600)*1000);
+      const expMs=(r.expires_in||3600)*1000;
+      localStorage.setItem(LS_TEXP, Date.now()+expMs);
+
+      // Agenda próxima renovação automática 5 minutos antes de expirar
+      agendarRenovacaoToken(expMs);
+
+      if(isRefresh){
+        // Renovação silenciosa — apenas atualiza o token sem recarregar nada
+        if(_tokenRefreshCallback){_tokenRefreshCallback(true);_tokenRefreshCallback=null;}
+        console.log('[Auth] Token renovado silenciosamente ✓');
+        return;
+      }
+
+      // Primeiro login — fluxo completo
       showLoading('Verificando acesso...');
       try{
         const ui=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gToken}});
@@ -911,7 +931,81 @@ function loginGoogle(){
       }catch(e){ hideLoading(); g('login-msg').innerHTML='<div class="blocked"><strong>Erro:</strong> '+e.message+'</div>'; }
     }
   });
-  client.requestAccessToken();
+  _tokenClient.requestAccessToken({prompt:'consent'});
+}
+
+function agendarRenovacaoToken(expMs){
+  // Cancela timer anterior se existir
+  if(_tokenRefreshTimer) clearTimeout(_tokenRefreshTimer);
+  // Renova 5 minutos antes de expirar (mínimo 30 segundos)
+  const renovarEm=Math.max(expMs-5*60*1000, 30*1000);
+  _tokenRefreshTimer=setTimeout(renovarTokenSilencioso, renovarEm);
+  console.log('[Auth] Renovação agendada em '+(renovarEm/60000).toFixed(1)+' min');
+}
+
+function renovarTokenSilencioso(){
+  if(!_tokenClient||!gUser){
+    // Sem client inicializado — tenta recriar
+    if(gUser) _tokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:CLIENT_ID,
+      scope:'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email',
+      prompt:'',
+      hint:gUser,
+      callback:async(r)=>{
+        if(r.error){console.warn('[Auth] Falha na renovação silenciosa:',r.error);mostrarAvisoReconectar();return;}
+        gToken=r.access_token;
+        localStorage.setItem(LS_TEXP,Date.now()+(r.expires_in||3600)*1000);
+        agendarRenovacaoToken((r.expires_in||3600)*1000);
+        console.log('[Auth] Token renovado ✓');
+      }
+    });
+    if(_tokenClient) _tokenClient.requestAccessToken({prompt:''});
+    return;
+  }
+  // Usa o client existente para renovar sem popup
+  _tokenRefreshCallback=function(ok){
+    if(!ok) mostrarAvisoReconectar();
+  };
+  try{
+    _tokenClient.requestAccessToken({prompt:'', login_hint:gUser});
+  }catch(e){
+    console.warn('[Auth] Erro ao renovar token:',e);
+    mostrarAvisoReconectar();
+  }
+}
+
+function mostrarAvisoReconectar(){
+  // Mostra banner discreto no topo sem interromper o trabalho
+  const existente=g('reconectar-banner');
+  if(existente)return; // já está mostrando
+  const banner=document.createElement('div');
+  banner.id='reconectar-banner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--amber);color:#000;padding:10px 16px;'
+    +'display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.2)';
+  banner.innerHTML='<span><i class="ti ti-refresh-alert"></i> Sua sessão está prestes a expirar. Clique para reconectar sem perder nada.</span>'
+    +'<button onclick="reconectarGoogle()" style="background:#000;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700">Reconectar</button>'
+    +'<button onclick="this.parentElement.remove()" style="background:transparent;border:none;cursor:pointer;font-size:16px;padding:0 4px">✕</button>';
+  document.body.prepend(banner);
+}
+
+async function reconectarGoogle(){
+  const banner=g('reconectar-banner'); if(banner)banner.remove();
+  if(!_tokenClient){
+    _tokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:CLIENT_ID,
+      scope:'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email',
+      prompt:'',
+      hint:gUser,
+      callback:(r)=>{
+        if(r.error){toast('Erro ao reconectar. Faça login novamente.','err');return;}
+        gToken=r.access_token;
+        localStorage.setItem(LS_TEXP,Date.now()+(r.expires_in||3600)*1000);
+        agendarRenovacaoToken((r.expires_in||3600)*1000);
+        toast('Reconectado! ✓','ok');
+      }
+    });
+  }
+  _tokenClient.requestAccessToken({prompt:''});
 }
 
 async function inicializarPlanilhaMestre(){
@@ -944,6 +1038,12 @@ async function entrarApp(comGoogle){
   g('login-screen').style.display='none';
   g('app').classList.add('visible');
   carregarConfig(); atualizarPills(); initExtras();
+  // Inicia timer de renovação de token se ainda válido
+  const texp=parseInt(localStorage.getItem(LS_TEXP)||'0');
+  if(texp>Date.now()){
+    const restante=texp-Date.now();
+    agendarRenovacaoToken(restante);
+  }
   if(comGoogle&&gToken){
     showLoading('Sincronizando dados...');
     try{ await initSheets(); await carregarDados(); }
@@ -974,11 +1074,23 @@ function atualizarPills(){
 }
 
 // ══ SHEETS API ══
-async function sheetsReq(method,path,body){
+async function sheetsReq(method,path,body,retry){
   const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets'+path,{
     method,headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},
     body:body?JSON.stringify(body):undefined
   });
+  // Token expirado — tenta renovar uma vez automaticamente
+  if(r.status===401&&!retry){
+    console.warn('[sheetsReq] Token expirado, renovando...');
+    await new Promise(function(resolve){
+      _tokenRefreshCallback=function(ok){resolve(ok);};
+      renovarTokenSilencioso();
+      // timeout de segurança
+      setTimeout(function(){resolve(false);},8000);
+    });
+    if(gToken) return sheetsReq(method,path,body,true);
+    throw new Error('Sessão expirada. Clique em Reconectar.');
+  }
   if(!r.ok){
     const e=await r.json().catch(()=>({}));
     const msg=(e.error&&e.error.message)||('Sheets API error '+r.status);
@@ -1105,6 +1217,8 @@ async function sincTudo(){
     if(!sheetId)throw new Error('Não foi possível localizar a planilha.');
     await carregarDados();
     toast('Sincronizado com a planilha! ✓','ok');
+    // Atualiza lista de clientes na assinatura se estiver aberta
+    if(cur==='assinatura')assinPopularClientes();
   }
   catch(e){ toast('Erro ao sincronizar: '+e.message,'err'); }
   finally{ hideLoading(); }
@@ -1159,6 +1273,8 @@ function go(id,el){
   if(id==='documentos')   renderDocumentos();
   if(id==='pdf')          renderPDF();
   if(id==='acessos')      renderAcessos();
+  if(id==='relatorios')   renderRelatorios();
+  if(id==='assinatura')   { if(db.clientes.length===0&&gToken){carregarDados().then(function(){renderAssinatura();});}else{renderAssinatura();} }
   if(id==='configuracoes')carregarConfig();
   renderAll();
 }
@@ -2744,35 +2860,66 @@ function renderAssinatura(){
         +'</div>';
     }
   }
-  // Preencher select de clientes
-  const sel=g('assin-cli');
-  if(sel){
-    sel.innerHTML='<option value="">Selecionar cliente...</option>'
-      +db.clientes.map(function(c){return '<option value="'+c.id+'">'+he(c.nome)+'</option>';}).join('');
-  }
+  // Preencher select de clientes — sempre recarrega do db atual
+  assinPopularClientes();
   // Tipo doc toggle
   assinToggleTipo();
   // Lista documentos
   assinListarPendentes();
 }
 
+function assinPopularClientes(){
+  const sel=g('assin-cli');
+  if(!sel)return;
+  const valorAtual=sel.value;
+  sel.innerHTML='<option value="">Selecionar cliente...</option>'
+    +db.clientes.map(function(c){
+      return '<option value="'+c.id+'"'+(valorAtual===c.id?' selected':'')+'>'+he(c.nome)+'</option>';
+    }).join('');
+  // Se não há clientes, mostra aviso
+  if(db.clientes.length===0){
+    sel.innerHTML='<option value="">Nenhum cliente cadastrado ainda</option>';
+  }
+}
+
 function assinSelecionarCliente(){
   const sel=g('assin-cli');
-  if(!sel||!sel.value)return;
+  if(!sel||!sel.value){
+    // Limpa campos ao desselecionar
+    const emailEl=g('assin-email'); if(emailEl)emailEl.value='';
+    const nomeDocEl=g('assin-nome-doc'); if(nomeDocEl)nomeDocEl.value='';
+    const wp=g('assin-wa-preview'); if(wp)wp.textContent='';
+    return;
+  }
   const c=db.clientes.find(function(x){return x.id===sel.value;});
   if(!c)return;
-  // Preenche e-mail e nome do doc
+
+  // E-mail: preenche se tiver, deixa em branco para preencher manualmente
   const emailEl=g('assin-email');
-  if(emailEl&&c.email) emailEl.value=c.email;
+  if(emailEl){
+    emailEl.value=c.email||'';
+    emailEl.placeholder=c.email?'':'Este cliente não tem e-mail — digite aqui';
+    emailEl.style.borderColor=c.email?'':'var(--amber)';
+  }
+
+  // Nome do documento automático
   const nomeDocEl=g('assin-nome-doc');
   const tipoSel=g('assin-tipo');
   if(nomeDocEl&&tipoSel){
     const tipos={upload:'Documento',procuracao:'Procuração Ad Judicia',contrato:'Contrato de Honorários',hipossuficiencia:'Decl. Hipossuficiência'};
     nomeDocEl.value=(tipos[tipoSel.value]||'Documento')+' — '+c.nome;
   }
+
   // Preview WhatsApp
   const wp=g('assin-wa-preview');
-  if(wp) wp.textContent=c.telefone?'WhatsApp: '+c.telefone:'(cliente sem telefone cadastrado)';
+  if(wp){
+    if(c.telefone){
+      wp.innerHTML='Será enviado para: <strong>'+c.telefone+'</strong>';
+      wp.style.color='var(--green-text)';
+    } else {
+      wp.innerHTML='<span style="color:var(--amber-text)">⚠ Cliente sem telefone cadastrado — WhatsApp não será enviado automaticamente.</span>';
+    }
+  }
 }
 
 function assinToggleTipo(){
