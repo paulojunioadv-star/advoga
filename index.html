@@ -280,6 +280,20 @@ tr:hover td{background:var(--bg3)}
 .cnpj-field label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);display:block;margin-bottom:2px}
 .cnpj-field span{font-size:12px;font-weight:500;color:var(--text)}
 
+
+/* ══ ASSINATURA DIGITAL ══ */
+.assin-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden}
+.assin-card-h{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.assin-card-body{padding:14px 16px}
+.assin-doc-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.assin-doc-row:last-child{border-bottom:none}
+.assin-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px}
+.assin-status.pending{background:var(--amber-bg);color:var(--amber-text)}
+.assin-status.signed{background:var(--green-bg);color:var(--green-text)}
+.assin-status.cancelled{background:var(--red-bg);color:var(--red-text)}
+.doc-upload-zone{border:2px dashed var(--border);border-radius:var(--rl);padding:30px;text-align:center;cursor:pointer;transition:all .15s}
+.doc-upload-zone:hover{border-color:var(--blue);background:var(--blue-bg)}
+
 /* DASH CHARTS */
 .dchart{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 @media(max-width:640px){.dchart{grid-template-columns:1fr}}
@@ -341,6 +355,7 @@ tr:hover td{background:var(--bg3)}
       <div class="ni" onclick="go('leads',this)"><i class="ti ti-layout-kanban"></i> Kanban Jurídico</div>
       <div class="ni" onclick="go('drive',this)"><i class="ti ti-brand-google-drive"></i> Google Drive</div>
       <div class="ni" onclick="go('documentos',this)"><i class="ti ti-file-text"></i> Documentos</div>
+      <div class="ni" onclick="go('assinatura',this)"><i class="ti ti-writing-sign"></i> Assinatura Digital</div>
       <div class="ni" onclick="go('pdf',this)"><i class="ti ti-file-zip"></i> Ferramentas PDF</div>
       <div class="ni" id="nav-acessos" style="display:none" onclick="go('acessos',this)"><i class="ti ti-shield-check"></i> Gerenciar Acessos</div>
       <div class="ni" onclick="abrirAssistenteIA()" id="nav-ia" style="color:var(--purple-text)"><i class="ti ti-robot"></i> Assistente IA <span class="premium-lock" style="margin-left:auto;font-size:9px"><i class="ti ti-sparkles"></i></span></div>
@@ -535,6 +550,101 @@ tr:hover td{background:var(--bg3)}
       </div>
     </div>
   </div>
+</div>
+
+<!-- ASSINATURA DIGITAL -->
+<div class="panel" id="p-assinatura">
+
+  <!-- Header com status do Autentique -->
+  <div id="assin-status-bar" style="margin-bottom:14px"></div>
+
+  <!-- Enviar documento para assinar -->
+  <div class="assin-card">
+    <div class="assin-card-h">
+      <i class="ti ti-writing-sign" style="font-size:18px;color:var(--blue)"></i>
+      <div>
+        <div style="font-weight:700;font-size:14px">Enviar documento para assinatura</div>
+        <div style="font-size:11px;color:var(--text3)">Upload de PDF ou documento gerado no CRM</div>
+      </div>
+    </div>
+    <div class="assin-card-body">
+      <!-- Selecionar cliente -->
+      <div class="fgrid" style="margin-bottom:12px">
+        <div class="fg">
+          <label class="fl">Cliente *</label>
+          <select class="fi" id="assin-cli" onchange="assinSelecionarCliente()">
+            <option value="">Selecionar cliente...</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">E-mail do signatário *</label>
+          <input class="fi" id="assin-email" placeholder="email@exemplo.com">
+        </div>
+      </div>
+      <div class="fgrid" style="margin-bottom:12px">
+        <div class="fg">
+          <label class="fl">Nome do documento</label>
+          <input class="fi" id="assin-nome-doc" placeholder="Ex: Contrato de Honorários — João Silva">
+        </div>
+        <div class="fg">
+          <label class="fl">Tipo de documento</label>
+          <select class="fi" id="assin-tipo">
+            <option value="upload">📎 Upload de PDF</option>
+            <option value="procuracao">⚖️ Procuração Ad Judicia</option>
+            <option value="contrato">📄 Contrato de Honorários</option>
+            <option value="hipossuficiencia">📋 Decl. Hipossuficiência</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Upload zone -->
+      <div id="assin-upload-area" style="margin-bottom:12px">
+        <div class="doc-upload-zone" onclick="document.getElementById('assin-file-input').click()" id="assin-dropzone"
+          ondragover="event.preventDefault();this.style.borderColor='var(--blue)'"
+          ondragleave="this.style.borderColor='var(--border)'"
+          ondrop="assinHandleDrop(event)">
+          <i class="ti ti-upload" style="font-size:28px;color:var(--text3);display:block;margin-bottom:8px"></i>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px">Clique ou arraste o PDF aqui</div>
+          <div style="font-size:11px;color:var(--text3)">Apenas arquivos PDF</div>
+          <input type="file" id="assin-file-input" accept=".pdf" style="display:none" onchange="assinSelecionarArquivo(this.files[0])">
+        </div>
+        <div id="assin-file-info" style="display:none;background:var(--bg3);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:8px">
+          <i class="ti ti-file-type-pdf" style="font-size:20px;color:var(--red-text)"></i>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600" id="assin-file-nome">—</div><div style="font-size:11px;color:var(--text3)" id="assin-file-size">—</div></div>
+          <button class="btn btn-r" onclick="assinLimparArquivo()"><i class="ti ti-x"></i></button>
+        </div>
+      </div>
+
+      <!-- Mensagem WhatsApp -->
+      <div style="background:var(--green-bg);border-radius:var(--r);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--green-text);display:flex;align-items:flex-start;gap:8px">
+        <i class="ti ti-brand-whatsapp" style="font-size:16px;margin-top:1px"></i>
+        <div><strong>Notificação WhatsApp automática:</strong> após enviar para assinatura, o sistema abre automaticamente o WhatsApp do cliente com o link do documento. <span id="assin-wa-preview"></span></div>
+      </div>
+
+      <button class="btn btn-p" onclick="assinEnviar()" style="width:100%;justify-content:center;padding:12px">
+        <i class="ti ti-send"></i> Enviar para assinatura digital
+      </button>
+    </div>
+  </div>
+
+  <!-- Documentos enviados para assinar -->
+  <div class="assin-card">
+    <div class="assin-card-h">
+      <i class="ti ti-clock" style="font-size:18px;color:var(--amber)"></i>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px">Documentos enviados para assinar</div>
+        <div style="font-size:11px;color:var(--text3)">Histórico desta sessão</div>
+      </div>
+      <button class="btn" onclick="assinListarPendentes()"><i class="ti ti-refresh"></i> Atualizar</button>
+    </div>
+    <div class="assin-card-body" id="assin-lista-docs">
+      <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">
+        <i class="ti ti-file-off" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
+        Nenhum documento enviado ainda nesta sessão.
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- PDF TOOLS -->
@@ -1034,7 +1144,7 @@ function exportarConfig(){
 }
 
 // ══ NAVEGAÇÃO ══
-const TITLES={dashboard:'Dashboard',acessos:'Gerenciar Acessos',clientes:'Clientes',processos:'Processos',tarefas:'Tarefas',agenda:'Agenda',financeiro:'Financeiro',leads:'Kanban Jurídico',drive:'Google Drive',documentos:'Documentos',pdf:'Ferramentas PDF',configuracoes:'Configurações'};
+const TITLES={dashboard:'Dashboard',acessos:'Gerenciar Acessos',clientes:'Clientes',processos:'Processos',tarefas:'Tarefas',agenda:'Agenda',financeiro:'Financeiro',leads:'Kanban Jurídico',drive:'Google Drive',documentos:'Documentos',pdf:'Ferramentas PDF',assinatura:'Assinatura Digital',configuracoes:'Configurações'};
 let cur='dashboard';
 
 function go(id,el){
@@ -2608,6 +2718,288 @@ function initExtras(){
   // Carregar feriados do ano atual em background
   carregarFeriados(new Date().getFullYear()).catch(()=>{});
   carregarFeriados(new Date().getFullYear()+1).catch(()=>{});
+}
+
+
+// ══════════════════════════════════════════════
+// ASSINATURA DIGITAL — Autentique
+// ══════════════════════════════════════════════
+let _assinDocs=[]; // histórico da sessão
+let _assinArquivo=null; // arquivo PDF selecionado
+
+function renderAssinatura(){
+  carregarConfig();
+  // Status bar
+  const sb=g('assin-status-bar');
+  if(sb){
+    if(cfg.autentiqueToken){
+      sb.innerHTML='<div style="background:var(--green-bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--green-text)">'
+        +'<i class="ti ti-circle-check" style="font-size:16px"></i>'
+        +'<div><strong>Autentique conectado!</strong> Token configurado. Documentos serão enviados via API.</div>'
+        +'</div>';
+    } else {
+      sb.innerHTML='<div style="background:var(--amber-bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--amber-text)">'
+        +'<div><i class="ti ti-alert-triangle"></i> <strong>Autentique não configurado.</strong> Acesse Configurações → Assinatura Digital e cole seu token.</div>'
+        +'<button class="btn" data-go="configuracoes" onclick="go(this.dataset.go,null)" style="white-space:nowrap"><i class="ti ti-settings"></i> Configurar</button>'
+        +'</div>';
+    }
+  }
+  // Preencher select de clientes
+  const sel=g('assin-cli');
+  if(sel){
+    sel.innerHTML='<option value="">Selecionar cliente...</option>'
+      +db.clientes.map(function(c){return '<option value="'+c.id+'">'+he(c.nome)+'</option>';}).join('');
+  }
+  // Tipo doc toggle
+  assinToggleTipo();
+  // Lista documentos
+  assinListarPendentes();
+}
+
+function assinSelecionarCliente(){
+  const sel=g('assin-cli');
+  if(!sel||!sel.value)return;
+  const c=db.clientes.find(function(x){return x.id===sel.value;});
+  if(!c)return;
+  // Preenche e-mail e nome do doc
+  const emailEl=g('assin-email');
+  if(emailEl&&c.email) emailEl.value=c.email;
+  const nomeDocEl=g('assin-nome-doc');
+  const tipoSel=g('assin-tipo');
+  if(nomeDocEl&&tipoSel){
+    const tipos={upload:'Documento',procuracao:'Procuração Ad Judicia',contrato:'Contrato de Honorários',hipossuficiencia:'Decl. Hipossuficiência'};
+    nomeDocEl.value=(tipos[tipoSel.value]||'Documento')+' — '+c.nome;
+  }
+  // Preview WhatsApp
+  const wp=g('assin-wa-preview');
+  if(wp) wp.textContent=c.telefone?'WhatsApp: '+c.telefone:'(cliente sem telefone cadastrado)';
+}
+
+function assinToggleTipo(){
+  const tipo=g('assin-tipo');
+  const uploadArea=g('assin-upload-area');
+  if(!tipo||!uploadArea)return;
+  uploadArea.style.display=tipo.value==='upload'?'block':'none';
+  // Atualiza nome doc
+  const sel=g('assin-cli');
+  if(sel&&sel.value) assinSelecionarCliente();
+}
+
+function assinSelecionarArquivo(file){
+  if(!file||file.type!=='application/pdf'){toast('Selecione um arquivo PDF.','err');return;}
+  _assinArquivo=file;
+  const info=g('assin-file-info');
+  if(info){
+    info.style.display='flex';
+    const n=g('assin-file-nome'); if(n)n.textContent=file.name;
+    const s=g('assin-file-size'); if(s)s.textContent=fmtBytes(file.size);
+  }
+  const dz=g('assin-dropzone'); if(dz)dz.style.display='none';
+}
+
+function assinLimparArquivo(){
+  _assinArquivo=null;
+  const info=g('assin-file-info'); if(info)info.style.display='none';
+  const dz=g('assin-dropzone'); if(dz)dz.style.display='block';
+  const fi=g('assin-file-input'); if(fi)fi.value='';
+}
+
+function assinHandleDrop(e){
+  e.preventDefault();
+  const f=e.dataTransfer.files[0];
+  if(f)assinSelecionarArquivo(f);
+}
+
+async function assinGerarPDFInterno(tipo,cliente){
+  if(typeof window.jspdf==='undefined'){toast('Biblioteca PDF ainda carregando...','err');return null;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:'mm',format:'a4'});
+  var adv=cfg.nome||'Advogado';
+  var oab=cfg.oab||'';
+  var cidade=cfg.cidade||'';
+  var uf=cfg.uf||'GO';
+  var hoje=new Date().toLocaleDateString('pt-BR');
+  doc.setFillColor(26,108,245); doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text('ORGANIZA CRM',14,14);
+  doc.setTextColor(30,30,30);
+  var y=32;
+  var linhas, txt;
+  if(tipo==='procuracao'){
+    doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text('INSTRUMENTO DE MANDATO AD JUDICIA',105,y,{align:'center'}); y+=10;
+    doc.setFontSize(10); doc.setFont('helvetica','normal');
+    txt='Pelo presente instrumento, '+cliente.nome
+      +(cliente.cpf?', CPF '+cliente.cpf:'')
+      +(cliente.rg?', RG '+cliente.rg:'')
+      +(cliente.rua?', residente em '+cliente.rua+(cliente.cidade?', '+cliente.cidade:''):'')
+      +', nomeia e constitui como seu procurador o(a) Dr(a). '+adv
+      +' (OAB/'+uf+' no '+oab+')'
+      +', a quem confere amplos poderes para representá-lo(a) em juízo.'
+      +' '+cidade+', '+hoje+'.';
+    linhas=doc.splitTextToSize(txt,182);
+    doc.text(linhas,14,y); y+=linhas.length*5+20;
+    doc.line(55,y,155,y); y+=6;
+    doc.text(cliente.nome,105,y,{align:'center'}); y+=5;
+    doc.text('Outorgante',105,y,{align:'center'});
+  } else if(tipo==='contrato'){
+    doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text('CONTRATO DE HONORÁRIOS ADVOCATÍCIOS',105,y,{align:'center'}); y+=10;
+    doc.setFontSize(10); doc.setFont('helvetica','normal');
+    txt='CONTRATANTE: '+cliente.nome+(cliente.cpf?', CPF '+cliente.cpf:'')
+      +'. CONTRATADO: Dr(a). '+adv+', OAB/'+uf+' no '+oab+'.'
+      +' O presente instrumento tem por objeto a prestação de serviços advocatícios.'
+      +' HONORÁRIOS: '+(cfg.honor||'30')+'% sobre o valor eventualmente obtido, somente em caso de êxito.'
+      +' '+cidade+', '+hoje+'.';
+    linhas=doc.splitTextToSize(txt,182);
+    doc.text(linhas,14,y); y+=linhas.length*5+15;
+    doc.setFontSize(9);
+    doc.text('___________________________',14,y); doc.text('___________________________',120,y); y+=5;
+    doc.text('Contratante: '+cliente.nome,14,y); doc.text('Dr(a). '+adv,120,y);
+  } else if(tipo==='hipossuficiencia'){
+    doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text('DECLARAÇÃO DE HIPOSSUFICIÊNCIA',105,y,{align:'center'}); y+=10;
+    doc.setFontSize(10); doc.setFont('helvetica','normal');
+    txt='Eu, '+cliente.nome+(cliente.cpf?', CPF '+cliente.cpf:'')
+      +', declaro, para fins de obtenção dos benefícios da gratuidade da justiça,'
+      +' nos termos do art. 98 do CPC, que não possuo condições de arcar com as custas do processo'
+      +' sem prejuízo do sustento próprio e de minha família.'
+      +' '+cidade+', '+hoje+'.';
+    linhas=doc.splitTextToSize(txt,182);
+    doc.text(linhas,14,y); y+=linhas.length*5+20;
+    doc.line(55,y,155,y); y+=6;
+    doc.text(cliente.nome,105,y,{align:'center'});
+  }
+  return doc.output('arraybuffer');
+}
+
+function porcentPorExtenso(p){
+  const m={'10':'dez','15':'quinze','20':'vinte','25':'vinte e cinco','30':'trinta','35':'trinta e cinco','40':'quarenta'};
+  return m[String(p)]||p;
+}
+
+async function assinEnviar(){
+  carregarConfig();
+  if(!cfg.autentiqueToken){toast('Configure o token do Autentique em Configurações.','err');go('configuracoes',null);return;}
+  const sel=g('assin-cli'); if(!sel||!sel.value){toast('Selecione um cliente.','err');return;}
+  const c=db.clientes.find(function(x){return x.id===sel.value;});
+  if(!c){toast('Cliente não encontrado.','err');return;}
+  const emailEl=g('assin-email');
+  const email=emailEl&&emailEl.value.trim()?emailEl.value.trim():c.email;
+  if(!email){toast('Informe o e-mail do signatário.','err');return;}
+  const tipo=g('assin-tipo')?.value||'upload';
+  const nomeDoc=g('assin-nome-doc')?.value.trim()||tipo+' — '+c.nome;
+
+  showLoading('Preparando documento...');
+  let pdfBuffer=null;
+
+  if(tipo==='upload'){
+    if(!_assinArquivo){hideLoading();toast('Selecione um arquivo PDF para enviar.','err');return;}
+    pdfBuffer=await _assinArquivo.arrayBuffer();
+  } else {
+    pdfBuffer=await assinGerarPDFInterno(tipo,c);
+    if(!pdfBuffer){hideLoading();return;}
+  }
+
+  // Convert to base64
+  const bytes=new Uint8Array(pdfBuffer);
+  let b64='';
+  for(let i=0;i<bytes.length;i+=1024){
+    b64+=String.fromCharCode.apply(null,bytes.subarray(i,i+1024));
+  }
+  const base64=btoa(b64);
+
+  showLoading('Enviando para o Autentique...');
+
+  const query=`mutation CreateDocument($document: NewDocumentInput!, $signers: [NewSignerInput!]!, $file: Upload!) {
+    createDocument(document: $document, signers: $signers, file: $file) {
+      id name
+      signatures { public_id name email signed { date } link { short_link } }
+    }
+  }`;
+
+  try{
+    // Autentique usa multipart/form-data com GraphQL multipart spec
+    const operations=JSON.stringify({
+      query,
+      variables:{
+        document:{name:nomeDoc},
+        signers:[{email,name:c.nome,action:'SIGN'}],
+        file:null
+      }
+    });
+    const map=JSON.stringify({'0':['variables.file']});
+    const form=new FormData();
+    form.append('operations',operations);
+    form.append('map',map);
+    form.append('0',new Blob([pdfBuffer],{type:'application/pdf'}),nomeDoc.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf');
+
+    const r=await fetch('https://api.autentique.com.br/2/graphql',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+cfg.autentiqueToken},
+      body:form
+    });
+    const d=await r.json();
+    if(d.errors&&d.errors.length){throw new Error(d.errors[0].message);}
+
+    const docData=d.data?.createDocument;
+    const link=docData?.signatures?.[0]?.link?.short_link||'';
+    hideLoading();
+
+    // Salvar no histórico
+    _assinDocs.unshift({id:docData?.id,nome:nomeDoc,cliente:c.nome,email,link,data:new Date().toLocaleString('pt-BR'),status:'Aguardando assinatura',telefone:c.telefone||''});
+    assinListarPendentes();
+
+    toast('✓ Documento enviado! Link: '+link,'ok');
+
+    // WhatsApp com link
+    if(c.telefone&&link){
+      const tel=c.telefone.replace(/\D/g,'');
+      var msg='Olá '+c.nome+', segue o link para assinatura do documento: '+nomeDoc+' - '+link+'. Atenciosamente, Dr(a). '+(cfg.nome||'Advogado');
+      window.open('https://wa.me/55'+tel+'?text='+encodeURIComponent(msg),'_blank');
+    }
+
+    assinLimparArquivo();
+    if(g('assin-cli'))g('assin-cli').value='';
+    if(g('assin-email'))g('assin-email').value='';
+    if(g('assin-nome-doc'))g('assin-nome-doc').value='';
+
+  }catch(e){
+    hideLoading();
+    const msg=e.message||'Erro desconhecido';
+    if(msg.includes('401')||msg.includes('Unauthenticated')||msg.includes('token')){
+      toast('Token do Autentique inválido. Verifique em Configurações.','err');
+    } else {
+      toast('Erro Autentique: '+msg,'err');
+    }
+  }
+}
+
+function assinListarPendentes(){
+  const el=g('assin-lista-docs'); if(!el)return;
+  if(!_assinDocs.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">'
+      +'<i class="ti ti-file-off" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>'
+      +'Nenhum documento enviado ainda nesta sessão.</div>';
+    return;
+  }
+  el.innerHTML=_assinDocs.map(function(d){
+    const waBtn=d.telefone&&d.link
+      ?('<a href="https://wa.me/55'+d.telefone.replace(/\D/g,'')+'?text='+encodeURIComponent('Olá '+d.cliente+', segue o link para assinatura do documento '+d.nome+': '+d.link)+'" target="_blank" class="btn" style="font-size:10px;padding:4px 8px" title="Reenviar WhatsApp"><i class="ti ti-brand-whatsapp"></i></a>')
+      :'';
+    const linkBtn=d.link
+      ?('<a href="'+d.link+'" target="_blank" class="btn" style="font-size:10px;padding:4px 8px" title="Abrir link de assinatura"><i class="ti ti-external-link"></i></a>')
+      :'';
+    return '<div class="assin-doc-row">'
+      +'<i class="ti ti-file-description" style="font-size:18px;color:var(--blue);flex-shrink:0"></i>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+he(d.nome)+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+he(d.cliente)+' · '+d.email+' · '+d.data+'</div>'
+      +'</div>'
+      +'<span class="assin-status pending">'+d.status+'</span>'
+      +'<div style="display:flex;gap:4px">'+waBtn+linkBtn+'</div>'
+      +'</div>';
+  }).join('');
 }
 
 // ══ ACESSOS ══
