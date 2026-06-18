@@ -20,10 +20,36 @@
   --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-text:#5b21b6;
   --r:8px;--rl:12px;--sw:220px;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+html[data-theme="dark"]{
+  --bg:#0a0e27;--bg2:#1a1f3a;--bg3:#252d4a;
+  --text:#e4e6eb;--text2:#a8adb5;--text3:#7a7f8f;
+  --border:#2d3548;
+  --blue:#00d4ff;--blue-bg:#001a2e;--blue-text:#00d4ff;
+  --green:#00ff88;--green-bg:#001a0d;--green-text:#00ff88;
+  --amber:#ffaa00;--amber-bg:#2a1a00;--amber-text:#ffaa00;
+  --red:#ff3366;--red-bg:#2a0a15;--red-text:#ff3366;
+  --purple:#bb00ff;--purple-bg:#2a0a3a;--purple-text:#bb00ff;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;transition:background-color .25s ease,color .25s ease}
+html[data-theme="dark"] body{background-image:radial-gradient(circle at 20% 50%, rgba(0,212,255,0.05) 0%, transparent 50%),radial-gradient(circle at 80% 80%, rgba(187,0,255,0.05) 0%, transparent 50%);background-attachment:fixed}
+
+/* TOGGLE DE TEMA */
+.topbar-theme-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);cursor:pointer;color:var(--text2);font-size:15px;flex-shrink:0;transition:background .15s ease}
+.topbar-theme-btn:hover{background:var(--bg3);color:var(--text)}
+.theme-switch{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.theme-switch-label{font-size:11px;font-weight:600;color:var(--text2);flex:1;display:flex;align-items:center;gap:6px}
+.theme-switch-label i{font-size:13px}
+.theme-toggle{position:relative;width:44px;height:24px;border-radius:99px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;flex-shrink:0;transition:background .2s ease}
+.theme-toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--blue);transition:transform .25s ease,background .2s ease;display:flex}
+html[data-theme="dark"] .theme-toggle::after{transform:translateX(20px)}
+.theme-toggle-icon{position:absolute;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none;transition:opacity .2s ease}
+.theme-toggle-icon.sun{left:5px;color:var(--amber);opacity:1}
+.theme-toggle-icon.moon{right:5px;color:var(--text3);opacity:.5}
+html[data-theme="dark"] .theme-toggle-icon.sun{opacity:.4}
+html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
 
 /* LOGIN */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;padding:16px}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;padding:16px;position:relative}
 .lcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:40px 36px;width:100%;max-width:380px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .llogo{text-align:center;margin-bottom:28px}
 .llogo-icon{font-size:40px;color:var(--blue);margin-bottom:8px}
@@ -162,6 +188,14 @@ tr:hover td{background:var(--bg3)}
 .cev.tarefa{background:#fef3c7;color:#92400e}
 .cev.processo{background:#fce7f3;color:#9d174d}
 .cev-more{font-size:10px;color:var(--text3);font-weight:500}
+.premium-lock{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--amber-bg);color:var(--amber-text)}
+.recurso-bloqueado{position:relative}
+.recurso-bloqueado::after{content:'';position:absolute;inset:0;background:transparent;cursor:not-allowed}
+html[data-theme="dark"] .cev.audiencia{background:rgba(0,212,255,0.2);color:var(--blue)}
+html[data-theme="dark"] .cev.prazo{background:rgba(255,51,102,0.2);color:var(--red)}
+html[data-theme="dark"] .cev.reuniao{background:rgba(187,0,255,0.2);color:var(--purple)}
+html[data-theme="dark"] .cev.tarefa{background:rgba(255,170,0,0.2);color:var(--amber)}
+html[data-theme="dark"] .cev.processo{background:rgba(255,51,102,0.2);color:var(--red)}
 
 /* KANBAN */
 .funil-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
@@ -305,7 +339,6 @@ tr:hover td{background:var(--bg3)}
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Organiza CRM">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.emailjs.com/sdk/4.3.3/email.min.js"></script>
 </head>
 <body>
 
@@ -317,6 +350,7 @@ tr:hover td{background:var(--bg3)}
 
 <!-- LOGIN -->
 <div id="login-screen">
+  <button class="topbar-theme-btn" id="login-theme-btn" onclick="toggleTheme()" title="Alternar tema claro/escuro" style="position:absolute;top:16px;right:16px"><i class="ti ti-moon-filled" id="login-theme-icon"></i></button>
   <div class="lcard">
     <div class="llogo">
       <div class="llogo-icon"><i class="ti ti-scale"></i></div>
@@ -358,8 +392,15 @@ tr:hover td{background:var(--bg3)}
       <div class="ni" onclick="go('assinatura',this)"><i class="ti ti-writing-sign"></i> Assinatura Digital</div>
       <div class="ni" onclick="go('pdf',this)"><i class="ti ti-file-zip"></i> Ferramentas PDF</div>
       <div class="ni" id="nav-acessos" style="display:none" onclick="go('acessos',this)"><i class="ti ti-shield-check"></i> Gerenciar Acessos</div>
-      <div class="ni" onclick="abrirAssistenteIA()" id="nav-ia" style="color:var(--purple-text)"><i class="ti ti-robot"></i> Assistente IA <span class="premium-lock" style="margin-left:auto;font-size:9px"><i class="ti ti-sparkles"></i></span></div>
+      <div class="ni" onclick="abrirAssistenteIA()" id="nav-ia" style="color:var(--purple-text)"><i class="ti ti-robot"></i> Assistente IA <span class="premium-lock" id="ia-lock-badge" style="margin-left:auto;font-size:9px;display:none"><i class="ti ti-sparkles"></i></span></div>
       <div class="ni" onclick="go('configuracoes',this)"><i class="ti ti-settings"></i> Configurações</div>
+    </div>
+    <div class="theme-switch">
+      <span class="theme-switch-label" id="theme-switch-label"><i class="ti ti-sun-filled"></i> Tema claro</span>
+      <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" role="button" aria-label="Alternar tema claro/escuro">
+        <span class="theme-toggle-icon sun"><i class="ti ti-sun-filled"></i></span>
+        <span class="theme-toggle-icon moon"><i class="ti ti-moon-filled"></i></span>
+      </div>
     </div>
     <div class="sfoot">
       <div class="suser" id="drive-st">Não conectado ao Google</div>
@@ -372,12 +413,14 @@ tr:hover td{background:var(--bg3)}
       <button class="btn" id="menu-btn" onclick="openSidebar()" style="display:none"><i class="ti ti-menu-2"></i></button>
       <span class="topbar-t" id="ttitle">Dashboard</span>
       <span id="today-date" style="font-size:11px;color:var(--text3);flex-shrink:0"></span>
+      <button class="topbar-theme-btn" id="topbar-theme-btn" onclick="toggleTheme()" title="Alternar tema claro/escuro"><i class="ti ti-moon-filled" id="topbar-theme-icon"></i></button>
       <button class="btn" onclick="sincTudo()" title="Sincronizar"><i class="ti ti-refresh"></i></button>
     </div>
     <div class="content">
 
 <!-- DASHBOARD -->
 <div class="panel active" id="p-dashboard">
+  <div id="notif-upgrade-area"></div>
   <div class="sgrid">
     <div class="sc"><div class="sl">Clientes</div><div class="sv" id="s-cli">0</div><div class="ss">cadastrados</div></div>
     <div class="sc"><div class="sl">Processos ativos</div><div class="sv" id="s-proc">0</div><div class="ss">em andamento</div></div>
@@ -396,6 +439,7 @@ tr:hover td{background:var(--bg3)}
 
 <!-- CLIENTES -->
 <div class="panel" id="p-clientes">
+  <div id="cli-limit-bar" style="margin-bottom:12px"></div>
   <div class="card">
     <div class="ch"><span class="ct">Clientes</span><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" placeholder="Buscar..." style="border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;font-size:12px;outline:none;width:160px" oninput="filtrarLista('cli-body',this.value)"><button class="btn" onclick="abrirImportCSV()" title="Importar CSV"><i class="ti ti-upload"></i> Importar</button><button class="btn btn-p" onclick="openModal('cliente')"><i class="ti ti-plus"></i> Novo</button></div></div>
     <div class="tbl-wrap"><table><thead><tr><th>Cliente / CPF</th><th>Telefone / WhatsApp</th><th>Drive</th><th>Status</th><th>Processos</th><th>Ações</th></tr></thead><tbody id="cli-body"></tbody></table></div>
@@ -622,11 +666,17 @@ tr:hover td{background:var(--bg3)}
         <div>Depois de enviar no Autentique, copie o link e use o botão de WhatsApp abaixo para mandar ao cliente. <span id="assin-wa-preview"></span></div>
       </div>
 
+      <!-- Dados para colar no Autentique -->
+      <div id="assin-dados-copiar" style="display:none;background:var(--bg3);border-radius:var(--r);padding:12px 14px;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-clipboard-text"></i> Dados do signatário (clique para copiar e cole no Autentique)</div>
+        <div style="display:flex;flex-direction:column;gap:6px" id="assin-dados-lista"></div>
+      </div>
+
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-p" onclick="assinBaixarPDF()" style="flex:1;justify-content:center;padding:12px;min-width:200px">
           <i class="ti ti-download"></i> Baixar PDF do documento
         </button>
-        <a class="btn" href="https://painel.autentique.com.br/documentos/novo" target="_blank" style="flex:1;justify-content:center;padding:12px;min-width:200px;text-decoration:none">
+        <a class="btn" href="https://painel.autentique.com.br/documentos/novo" target="_blank" style="flex:1;justify-content:center;padding:12px;min-width:200px;text-decoration:none" onclick="assinMarcarAbriuAutentique()">
           <i class="ti ti-external-link"></i> Abrir no Autentique
         </a>
       </div>
@@ -634,24 +684,6 @@ tr:hover td{background:var(--bg3)}
         <button class="btn" style="width:100%;justify-content:center;background:#25d366;color:#fff;border-color:#25d366" onclick="assinEnviarWhatsAppManual()">
           <i class="ti ti-brand-whatsapp"></i> Enviar link por WhatsApp
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Documentos enviados para assinar -->
-  <div class="assin-card">
-    <div class="assin-card-h">
-      <i class="ti ti-clock" style="font-size:18px;color:var(--amber)"></i>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:14px">Documentos enviados para assinar</div>
-        <div style="font-size:11px;color:var(--text3)">Histórico desta sessão</div>
-      </div>
-      <button class="btn" onclick="assinListarPendentes()"><i class="ti ti-refresh"></i> Atualizar</button>
-    </div>
-    <div class="assin-card-body" id="assin-lista-docs">
-      <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">
-        <i class="ti ti-file-off" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
-        Nenhum documento enviado ainda nesta sessão.
       </div>
     </div>
   </div>
@@ -734,13 +766,13 @@ tr:hover td{background:var(--bg3)}
   <div class="card">
     <div class="ch"><span class="ct"><i class="ti ti-shield-check"></i> Gerenciar Acessos</span><button class="btn btn-p" onclick="abrirModalNovoUsuario()"><i class="ti ti-plus"></i> Adicionar usuário</button></div>
     <div style="padding:12px 16px;background:var(--blue-bg);border-bottom:1px solid var(--border);font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Acessos gerenciados na planilha <strong>"Organiza Master Acessos"</strong> no seu Google Drive.</div>
-    <div class="tbl-wrap"><table><thead><tr><th>E-mail</th><th>Nome</th><th>Plano</th><th>Status</th><th>Data acesso</th><th>Ações</th></tr></thead><tbody id="acessos-body"></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>E-mail</th><th>Nome</th><th>Plano</th><th>Status</th><th>Cadastro</th><th>Último acesso</th><th>Total acessos</th><th>Clientes</th><th>Ações</th></tr></thead><tbody id="acessos-body"></tbody></table></div>
   </div>
   <div class="card"><div class="ch"><span class="ct">Link de acesso</span></div>
     <div style="padding:16px">
       <p style="font-size:13px;margin-bottom:8px">Compartilhe esse link com seus clientes:</p>
       <div style="display:flex;gap:8px;align-items:center">
-        <input class="fi" id="link-acesso" value="https://paulojunioadv-star.github.io/advoga" readonly style="flex:1;background:var(--bg3)">
+        <input class="fi" id="link-acesso" value="https://organizacrm.online" readonly style="flex:1;background:var(--bg3)">
         <button class="btn btn-p" onclick="copiarLink()"><i class="ti ti-copy"></i> Copiar</button>
       </div>
     </div>
@@ -749,15 +781,15 @@ tr:hover td{background:var(--bg3)}
 
 <!-- CONFIGURAÇÕES -->
 <div class="panel" id="p-configuracoes">
-  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-user-circle"></i> Dados do advogado</div>
-    <div class="fgrid"><div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="cfg-nome" placeholder="Dr. João Silva"></div><div class="fg"><label class="fl">OAB *</label><input class="fi" id="cfg-oab" placeholder="OAB/GO nº 00.000"></div></div>
-    <div class="fgrid"><div class="fg"><label class="fl">Nacionalidade</label><input class="fi" id="cfg-nac" value="brasileiro(a)"></div><div class="fg"><label class="fl">Estado civil</label><select class="fi" id="cfg-civil"><option>solteiro(a)</option><option>casado(a)</option><option>divorciado(a)</option><option>viúvo(a)</option></select></div></div>
-    <div class="fg"><label class="fl">Endereço profissional *</label><input class="fi" id="cfg-end" placeholder="Av. das Flores, nº 100, sala 01, Centro"></div>
-    <div class="fgrid3"><div class="fg"><label class="fl">Cidade</label><input class="fi" id="cfg-cidade" placeholder="Goiânia"></div><div class="fg"><label class="fl">UF</label><input class="fi" id="cfg-uf" placeholder="GO"></div><div class="fg"><label class="fl">CEP</label><input class="fi" id="cfg-cep" placeholder="00000-000"></div></div>
-  </div>
-  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-phone"></i> Contato</div>
-    <div class="fgrid"><div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="cfg-wpp" placeholder="(62) 99999-9999"></div><div class="fg"><label class="fl">E-mail profissional</label><input class="fi" id="cfg-email" placeholder="contato@escritorio.adv.br"></div></div>
-    <div class="fg"><label class="fl">Site</label><input class="fi" id="cfg-site" placeholder="www.escritorio.adv.br"></div>
+  <div class="cfg-s">
+    <div class="cfg-t"><i class="ti ti-users"></i> Advogados (até 3 perfis)</div>
+    <div style="background:var(--blue-bg);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Cadastre até 3 advogados. O <strong>Principal</strong> é usado por padrão ao gerar documentos. Esses dados são salvos na sua planilha — não se perdem ao trocar de domínio ou navegador.</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="adv-tabs"></div>
+    <div id="adv-form-area"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn btn-p" onclick="salvarAdvogadoAtual()"><i class="ti ti-check"></i> Salvar este advogado</button>
+      <button class="btn" onclick="definirAdvogadoPrincipal()"><i class="ti ti-star"></i> Definir como principal</button>
+    </div>
   </div>
   <div class="cfg-s"><div class="cfg-t"><i class="ti ti-file-dollar"></i> Contrato padrão</div>
     <div class="fgrid"><div class="fg"><label class="fl">% Honorários (RPV/Precatório)</label><input class="fi" id="cfg-honor" value="30"></div><div class="fg"><label class="fl">Foro de eleição</label><input class="fi" id="cfg-foro" placeholder="Trindade/GO"></div></div>
@@ -767,11 +799,6 @@ tr:hover td{background:var(--bg3)}
     <div class="fgrid"><div class="fg"><label class="fl">Public Key</label><input class="fi" id="cfg-pdf-pub" placeholder="project_public_..."></div><div class="fg"><label class="fl">Secret Key</label><input class="fi" id="cfg-pdf-sec" placeholder="secret_key_..." type="password"></div></div>
     <div style="font-size:11px;color:var(--text3)"><i class="ti ti-shield-lock"></i> Chaves salvas apenas no seu navegador.</div>
   </div>
-  <div class="cfg-s"><div class="cfg-t"><i class="ti ti-mail"></i> EmailJS — E-mail automático</div>
-    <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Crie conta gratuita em <a href="https://emailjs.com" target="_blank" style="color:var(--blue);font-weight:600">emailjs.com</a> → Account → API Keys. Plano gratuito: 200 e-mails/mês.</div>
-    <div class="fgrid"><div class="fg"><label class="fl">Service ID</label><input class="fi" id="cfg-ejs-service" placeholder="service_xxxxxxx"></div><div class="fg"><label class="fl">Public Key</label><input class="fi" id="cfg-ejs-key" placeholder="xxxxxxxxxxxxxx" type="password"></div></div>
-    <div class="fgrid"><div class="fg"><label class="fl">Template — Cobrança</label><input class="fi" id="cfg-ejs-tpl-cob" placeholder="template_xxxxxxx"></div><div class="fg"><label class="fl">Template — Lembrete</label><input class="fi" id="cfg-ejs-tpl-lem" placeholder="template_xxxxxxx"></div></div>
-  </div>
   <div class="cfg-s"><div class="cfg-t"><i class="ti ti-writing-sign"></i> Autentique — Assinatura Digital</div>
     <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Use a aba <strong>Assinatura Digital</strong> no menu para gerar/baixar documentos. O envio é feito manualmente direto no painel do <a href="https://painel.autentique.com.br" target="_blank" style="color:var(--blue);font-weight:600">autentique.com.br</a>.</div>
   </div>
@@ -780,7 +807,7 @@ tr:hover td{background:var(--bg3)}
     <div class="fg"><label class="fl">Groq API Key</label><input class="fi" id="cfg-claude-key" placeholder="gsk_..." type="password"></div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <button class="btn btn-p" onclick="salvarConfig()"><i class="ti ti-check"></i> Salvar configurações</button>
+    <button class="btn btn-p" onclick="salvarConfig()"><i class="ti ti-check"></i> Salvar demais configurações</button>
     <button class="btn" onclick="exportarConfig()"><i class="ti ti-download"></i> Exportar configurações</button>
     <button class="btn" onclick="testarNotificacoes()"><i class="ti ti-bell"></i> Testar notificações</button>
   </div>
@@ -839,14 +866,87 @@ const LS_SHEET = 'advoga_sheet_id';
 const LS_MASTER= 'advoga_master_sheet';
 const LS_USER  = 'advoga_user';
 const LS_TEXP  = 'advoga_token_exp';
+const LS_PLANO = 'advoga_plano';
+const LS_THEME = 'advoga_theme';
+// ══ PLANOS ══
+const PLANOS_INFO = {
+  gratuito:{ nome:'Gratuito', limiteClientes:20, ia:false, pdf:false, assinatura:false, preco:'R$ 0' },
+  essencial:{ nome:'Essencial', limiteClientes:200, ia:false, pdf:true, assinatura:true, preco:'R$ 19,90' },
+  premium:{ nome:'Profissional', limiteClientes:Infinity, ia:true, pdf:true, assinatura:true, preco:'R$ 29,90' }
+};
+function normalizarPlano(p){
+  p=(p||'').toLowerCase().trim();
+  if(p==='básico'||p==='basico'||p==='free'||p==='gratuito')return'gratuito';
+  if(p==='essencial'||p==='intermediário'||p==='intermediario')return'essencial';
+  if(p==='premium'||p==='profissional'||p==='admin')return'premium';
+  return'gratuito';
+}
+function planoInfo(){ return PLANOS_INFO[normalizarPlano(meuPlano)]; }
+function limiteClientesAtual(){ return planoInfo().limiteClientes; }
+function recursoLiberado(rec){ return !!planoInfo()[rec]; }
+function atualizarBadgesPlano(){
+  const lockIa=document.getElementById('ia-lock-badge');
+  if(lockIa)lockIa.style.display=recursoLiberado('ia')?'none':'inline-flex';
+}
+function exigirRecurso(rec,nomeAmigavel){
+  if(recursoLiberado(rec))return true;
+  abrirModalRecursoBloqueado(nomeAmigavel);
+  return false;
+}
+function abrirModalRecursoBloqueado(nomeAmigavel){
+  g('modal-t').textContent='Recurso bloqueado';
+  g('modal-b').innerHTML=`
+    <div style="background:var(--amber-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--amber-text);display:flex;gap:8px;align-items:flex-start">
+      <i class="ti ti-lock" style="font-size:18px;margin-top:1px"></i>
+      <div><strong>${nomeAmigavel}</strong> não está disponível no seu plano atual (<strong>${planoInfo().nome}</strong>).</div>
+    </div>
+    <p style="font-size:13px;margin-bottom:10px">Atualize seu plano para usar esse recurso:</p>
+    <button class="btn btn-p" style="width:100%;justify-content:center;padding:12px;margin-bottom:8px" onclick="enviarSolicitacaoUpgrade()">
+      <i class="ti ti-send"></i> Enviar solicitação de upgrade
+    </button>
+    <button class="btn" style="width:100%;justify-content:center;background:#25d366;color:#fff;border-color:#25d366" onclick="abrirWhatsAppUpgrade()">
+      <i class="ti ti-brand-whatsapp"></i> Falar agora no WhatsApp
+    </button>
+  `;
+  const sb=g('modal-save-btn'); if(sb)sb.style.display='none';
+  g('overlay').classList.add('open');
+}
 
 // ══ ESTADO ══
 let gToken='', gUser='', sheetId='', MASTER_SHEET_ID='';
+let meuPlano=localStorage.getItem(LS_PLANO)||'gratuito';
 let modalType='', mEditId=null, _modalAcesso=false, _saving=false;
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 let tipoDocAtual='padrao', pdfArquivo=null, mergeArquivos=[];
-let cfg={nome:'',oab:'',nac:'brasileiro(a)',civil:'solteiro(a)',end:'',cidade:'',uf:'GO',cep:'',wpp:'',email:'',site:'',honor:'30',foro:'',pdfPub:'',pdfSec:'',ejsService:'',ejsKey:'',ejsTplCob:'',ejsTplLem:'',autentiqueToken:'',claudeKey:'',autentiqueProxy:''};
-let db={clientes:[],processos:[],tarefas:[],financeiro:[],leads:[],eventos:[],kbProc:[],kbPrazos:[]};
+let cfg={nome:'',oab:'',nac:'brasileiro(a)',civil:'solteiro(a)',end:'',cidade:'',uf:'GO',cep:'',wpp:'',email:'',site:'',honor:'30',foro:'',pdfPub:'',pdfSec:'',claudeKey:''};
+let db={clientes:[],processos:[],tarefas:[],financeiro:[],leads:[],eventos:[],kbProc:[],kbPrazos:[],advogados:[]};
+
+// ══ TEMA (claro / escuro) ══
+function aplicarTema(tema){
+  const t=tema==='dark'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem(LS_THEME,t);
+  const isDark=t==='dark';
+  const lbl=document.getElementById('theme-switch-label');
+  if(lbl)lbl.innerHTML=isDark?'<i class="ti ti-moon-filled"></i> Tema escuro':'<i class="ti ti-sun-filled"></i> Tema claro';
+  const topIcon=document.getElementById('topbar-theme-icon');
+  if(topIcon)topIcon.className='ti '+(isDark?'ti-sun-filled':'ti-moon-filled');
+  const loginIcon=document.getElementById('login-theme-icon');
+  if(loginIcon)loginIcon.className='ti '+(isDark?'ti-sun-filled':'ti-moon-filled');
+  const metaTheme=document.querySelector('meta[name="theme-color"]');
+  if(metaTheme)metaTheme.setAttribute('content',isDark?'#0a0e27':'#1a6cf5');
+  if(typeof renderDash==='function'){ try{ renderDash(); }catch(e){} }
+}
+function toggleTheme(){
+  const atual=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
+  aplicarTema(atual==='dark'?'light':'dark');
+}
+(function initTema(){
+  const salvo=localStorage.getItem(LS_THEME);
+  if(salvo==='dark'||salvo==='light'){ aplicarTema(salvo); return; }
+  const prefereDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  aplicarTema(prefereDark?'dark':'light');
+})();
 
 // ══ LOADING ══
 function showLoading(msg='Carregando...'){
@@ -927,6 +1027,7 @@ function loginGoogle(){
         gUser=ud.email||'';
         localStorage.setItem(LS_USER,gUser);
         if(ADMINS.includes(gUser.toLowerCase())){
+          meuPlano='premium'; localStorage.setItem(LS_PLANO,meuPlano);
           await inicializarPlanilhaMestre();
           g('nav-acessos').style.display='flex';
           await entrarApp(true);
@@ -1032,23 +1133,60 @@ async function inicializarPlanilhaMestre(){
   const cr=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets',{method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({properties:{title:'Advoga Master Acessos'},sheets:[{properties:{title:'Usuários'}}]})})).json();
   MASTER_SHEET_ID=cr.spreadsheetId;
   localStorage.setItem(LS_MASTER,MASTER_SHEET_ID);
-  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usu%C3%A1rios!A1?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['email','status','plano','nome','data_acesso'],[ADMIN_EMAIL,'ativo','admin','Paulo Júnio',new Date().toLocaleDateString('pt-BR')]]})});
+  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+MASTER_SHEET_ID+'/values/Usu%C3%A1rios!A1?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['email','status','plano','nome','data_cadastro','ultimo_login','total_logins','qtd_clientes'],[ADMIN_EMAIL,'ativo','admin','Paulo Júnio',new Date().toLocaleDateString('pt-BR'),'','0','0']]})});
 }
 
 async function verificarAcesso(email){
   const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID||localStorage.getItem(LS_MASTER); if(!mid)return false;
   try{
-    const d=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/Usu%C3%A1rios!A:C',{headers:{Authorization:'Bearer '+gToken}})).json();
+    const d=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/Usu%C3%A1rios!A:H',{headers:{Authorization:'Bearer '+gToken}})).json();
     if(!d.values||d.values.length<2)return false;
-    const row=d.values.slice(1).find(r=>r[0]&&r[0].toLowerCase()===email.toLowerCase());
-    return row&&row[1]&&row[1].toLowerCase()==='ativo';
+    const idx=d.values.slice(1).findIndex(r=>r[0]&&r[0].toLowerCase()===email.toLowerCase());
+    if(idx===-1)return false;
+    const row=d.values[idx+1];
+    if(row&&row[1]&&row[1].toLowerCase()==='ativo'){
+      meuPlano=normalizarPlano(row[2]||'gratuito');
+      localStorage.setItem(LS_PLANO,meuPlano);
+      registrarLoginUsuario(mid,idx+2,row).catch(function(e){console.warn('[Acessos] erro ao registrar login:',e.message);});
+      return true;
+    }
+    return false;
   }catch(e){return false;}
+}
+
+// Registra métricas de acesso: data/hora do login, contador total, e dispara depois uma atualização da contagem de clientes
+async function registrarLoginUsuario(mid,linha,row){
+  const agora=new Date();
+  const dataHora=agora.toLocaleDateString('pt-BR')+' '+agora.toLocaleTimeString('pt-BR');
+  const totalAnterior=parseInt(row[6]||'0')||0;
+  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/Usu%C3%A1rios!F'+linha+':G'+linha+'?valueInputOption=RAW',{
+    method:'PUT',
+    headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},
+    body:JSON.stringify({values:[[dataHora,totalAnterior+1]]})
+  });
+}
+
+// Atualiza a coluna H (quantidade de clientes cadastrados) do usuário logado — chamado após carregar/sincronizar dados
+async function atualizarContagemClientesNaPlanilhaMestre(){
+  if(!gUser||ADMINS.includes(gUser.toLowerCase()))return;
+  const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID; if(!mid)return;
+  try{
+    const d=await sheetsReq('GET','/'+mid+'/values/Usu%C3%A1rios!A:A');
+    if(!d.values)return;
+    const idx=d.values.findIndex(function(r){return r[0]&&r[0].toLowerCase()===gUser.toLowerCase();});
+    if(idx===-1)return;
+    await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/Usu%C3%A1rios!H'+(idx+1)+'?valueInputOption=RAW',{
+      method:'PUT',
+      headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},
+      body:JSON.stringify({values:[[db.clientes?.length||0]]})
+    });
+  }catch(e){console.warn('[Acessos] erro ao atualizar contagem de clientes:',e.message);}
 }
 
 async function entrarApp(comGoogle){
   g('login-screen').style.display='none';
   g('app').classList.add('visible');
-  carregarConfig(); atualizarPills(); initExtras();
+  carregarConfig(); atualizarPills(); initExtras(); atualizarBadgesPlano();
   // Inicia timer de renovação de token se ainda válido
   const texp=parseInt(localStorage.getItem(LS_TEXP)||'0');
   if(texp>Date.now()){
@@ -1062,6 +1200,7 @@ async function entrarApp(comGoogle){
     finally{ hideLoading(); }
   } else { carregarLocal(); renderAll(); }
   if(sheetId) localStorage.setItem(LS_SHEET,sheetId);
+  if(gUser===ADMIN_EMAIL) renderNotificacoesUpgrade();
   const d=new Date(); const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   const el=g('today-date'); if(el) el.textContent=d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear();
 }
@@ -1119,9 +1258,10 @@ const ABA_KEYS={
   Leads:    'id,nome,telefone,email,area,stage,obs'.split(','),
   Eventos:  'id,titulo,data,hora,tipo,cliente,local,obs,googleId'.split(','),
   KbProc:   'id,titulo,cliente,numero,fase,prazo,prioridade,obs,resp'.split(','),
-  KbPrazos: 'id,titulo,cliente,prazo,status,wip,obs,resp'.split(',')
+  KbPrazos: 'id,titulo,cliente,prazo,status,wip,obs,resp'.split(','),
+  Advogados:'id,nome,oab,nac,civil,end,cidade,uf,cep,wpp,email,site,honor,foro,principal'.split(',')
 };
-const ABA_DB={Clientes:'clientes',Processos:'processos',Tarefas:'tarefas',Financeiro:'financeiro',Leads:'leads',Eventos:'eventos',KbProc:'kbProc',KbPrazos:'kbPrazos'};
+const ABA_DB={Clientes:'clientes',Processos:'processos',Tarefas:'tarefas',Financeiro:'financeiro',Leads:'leads',Eventos:'eventos',KbProc:'kbProc',KbPrazos:'kbPrazos',Advogados:'advogados'};
 
 async function initSheets(){
   const saved=localStorage.getItem(LS_SHEET);
@@ -1205,6 +1345,7 @@ async function carregarDados(){
   });
   salvarLocal(); renderAll();
   if(cur==='agenda')renderAgenda();
+  atualizarContagemClientesNaPlanilhaMestre();
 }
 
 async function salvarAba(aba,dados){
@@ -1213,12 +1354,13 @@ async function salvarAba(aba,dados){
   await sheetsReq('PUT','/'+sheetId+'/values/'+encodeURIComponent(aba)+'!A1?valueInputOption=RAW',{values:[hdr,...dados.map(d=>hdr.map(h=>d[h]||''))]});
 }
 
-async function salvarClientes()  { await salvarAba('Clientes',  db.clientes); }
+async function salvarClientes()  { await salvarAba('Clientes',  db.clientes); atualizarContagemClientesNaPlanilhaMestre(); }
 async function salvarProcessos() { await salvarAba('Processos', db.processos); }
 async function salvarTarefas()   { await salvarAba('Tarefas',   db.tarefas); }
 async function salvarFinanceiro(){ await salvarAba('Financeiro',db.financeiro); }
 async function salvarLeads()     { await salvarAba('Leads',     db.leads); }
 async function salvarEventos()   { await salvarAba('Eventos',   db.eventos); }
+async function salvarAdvogados() { await salvarAba('Advogados', db.advogados); }
 
 async function sincTudo(){
   if(!gToken){ toast('Conecte sua conta Google primeiro.','err'); return; }
@@ -1244,20 +1386,100 @@ async function salvar(fn){
 }
 
 // ══ CONFIGURAÇÕES ══
+// ══ CONFIGURAÇÕES — múltiplos advogados ══
+let _advAbaAtiva=0; // índice 0,1,2 da aba sendo editada na tela
+
+function garantirTresAdvogados(){
+  while(db.advogados.length<3){
+    db.advogados.push({id:genId(),nome:'',oab:'',nac:'brasileiro(a)',civil:'solteiro(a)',end:'',cidade:'',uf:'GO',cep:'',wpp:'',email:'',site:'',honor:'30',foro:'',principal: db.advogados.length===0?'sim':''});
+  }
+}
+
+function advogadoPrincipal(){
+  garantirTresAdvogados();
+  return db.advogados.find(a=>a.principal==='sim') || db.advogados[0];
+}
+
+function aplicarAdvogadoPrincipalEmCfg(){
+  const p=advogadoPrincipal();
+  cfg.nome=p.nome||''; cfg.oab=p.oab||''; cfg.nac=p.nac||'brasileiro(a)'; cfg.civil=p.civil||'solteiro(a)';
+  cfg.end=p.end||''; cfg.cidade=p.cidade||''; cfg.uf=p.uf||'GO'; cfg.cep=p.cep||'';
+  cfg.wpp=p.wpp||''; cfg.email=p.email||''; cfg.site=p.site||'';
+}
+
+function renderAdvTabs(){
+  garantirTresAdvogados();
+  const tabsEl=g('adv-tabs'); if(!tabsEl)return;
+  tabsEl.innerHTML=db.advogados.map((a,i)=>{
+    const nome=a.nome?a.nome:'Advogado '+(i+1);
+    const principalBadge=a.principal==='sim'?' <i class="ti ti-star-filled" style="color:var(--amber-text);font-size:12px"></i>':'';
+    return '<button class="btn'+(i===_advAbaAtiva?' btn-p':'')+'" style="font-size:12px" onclick="trocarAbaAdvogado('+i+')">'+he(nome)+principalBadge+'</button>';
+  }).join('');
+  renderAdvForm();
+}
+
+function trocarAbaAdvogado(i){ _advAbaAtiva=i; renderAdvTabs(); }
+
+function renderAdvForm(){
+  const el=g('adv-form-area'); if(!el)return;
+  const a=db.advogados[_advAbaAtiva]||{};
+  el.innerHTML=`
+    <div class="fgrid"><div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="adv-nome" placeholder="Dr. João Silva" value="${he(a.nome||'')}"></div><div class="fg"><label class="fl">OAB *</label><input class="fi" id="adv-oab" placeholder="OAB/GO nº 00.000" value="${he(a.oab||'')}"></div></div>
+    <div class="fgrid"><div class="fg"><label class="fl">Nacionalidade</label><input class="fi" id="adv-nac" value="${he(a.nac||'brasileiro(a)')}"></div><div class="fg"><label class="fl">Estado civil</label><select class="fi" id="adv-civil"><option${a.civil==='solteiro(a)'?' selected':''}>solteiro(a)</option><option${a.civil==='casado(a)'?' selected':''}>casado(a)</option><option${a.civil==='divorciado(a)'?' selected':''}>divorciado(a)</option><option${a.civil==='viúvo(a)'?' selected':''}>viúvo(a)</option></select></div></div>
+    <div class="fg"><label class="fl">Endereço profissional *</label><input class="fi" id="adv-end" placeholder="Av. das Flores, nº 100, sala 01, Centro" value="${he(a.end||'')}"></div>
+    <div class="fgrid3"><div class="fg"><label class="fl">Cidade</label><input class="fi" id="adv-cidade" placeholder="Goiânia" value="${he(a.cidade||'')}"></div><div class="fg"><label class="fl">UF</label><input class="fi" id="adv-uf" placeholder="GO" value="${he(a.uf||'GO')}"></div><div class="fg"><label class="fl">CEP</label><input class="fi" id="adv-cep" placeholder="00000-000" value="${he(a.cep||'')}"></div></div>
+    <div class="fgrid"><div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="adv-wpp" placeholder="(62) 99999-9999" value="${he(a.wpp||'')}"></div><div class="fg"><label class="fl">E-mail profissional</label><input class="fi" id="adv-email" placeholder="contato@escritorio.adv.br" value="${he(a.email||'')}"></div></div>
+    <div class="fg"><label class="fl">Site</label><input class="fi" id="adv-site" placeholder="www.escritorio.adv.br" value="${he(a.site||'')}"></div>
+  `;
+}
+
+async function salvarAdvogadoAtual(){
+  garantirTresAdvogados();
+  const a=db.advogados[_advAbaAtiva];
+  a.nome=g('adv-nome').value.trim();
+  a.oab=g('adv-oab').value.trim();
+  a.nac=g('adv-nac').value.trim();
+  a.civil=g('adv-civil').value;
+  a.end=g('adv-end').value.trim();
+  a.cidade=g('adv-cidade').value.trim();
+  a.uf=g('adv-uf').value.trim();
+  a.cep=g('adv-cep').value.trim();
+  a.wpp=g('adv-wpp').value.trim();
+  a.email=g('adv-email').value.trim();
+  a.site=g('adv-site').value.trim();
+  await salvar(salvarAdvogados);
+  if(a.principal==='sim') aplicarAdvogadoPrincipalEmCfg();
+  renderAdvTabs();
+  toast('Advogado salvo!','ok');
+}
+
+async function definirAdvogadoPrincipal(){
+  garantirTresAdvogados();
+  if(!db.advogados[_advAbaAtiva].nome){toast('Preencha e salve os dados deste advogado primeiro.','err');return;}
+  db.advogados.forEach((a,i)=>{a.principal=(i===_advAbaAtiva)?'sim':'';});
+  await salvar(salvarAdvogados);
+  aplicarAdvogadoPrincipalEmCfg();
+  renderAdvTabs();
+  toast('Definido como advogado principal!','ok');
+}
+
 function carregarConfig(){
   const s=localStorage.getItem(LS_CFG);
   if(s)try{cfg={...cfg,...JSON.parse(s)};}catch(e){}
-  ['nome','oab','nac','civil','end','cidade','uf','cep','wpp','email','site','honor','foro'].forEach(f=>{const el=g('cfg-'+f);if(el)el.value=cfg[f]||'';});
+  garantirTresAdvogados();
+  if(db.advogados.some(a=>a.nome)) aplicarAdvogadoPrincipalEmCfg();
+  ['honor','foro'].forEach(f=>{const el=g('cfg-'+f);if(el)el.value=cfg[f]||'';});
   const pub=g('cfg-pdf-pub'); if(pub)pub.value=cfg.pdfPub||'';
   const sec=g('cfg-pdf-sec'); if(sec)sec.value=cfg.pdfSec||'';
-  const ejss=g('cfg-ejs-service'); if(ejss)ejss.value=cfg.ejsService||'';
-  const ejsk=g('cfg-ejs-key'); if(ejsk)ejsk.value=cfg.ejsKey||'';
-  const ejsc=g('cfg-ejs-tpl-cob'); if(ejsc)ejsc.value=cfg.ejsTplCob||'';
-  const ejsl=g('cfg-ejs-tpl-lem'); if(ejsl)ejsl.value=cfg.ejsTplLem||'';
   const clk=g('cfg-claude-key'); if(clk)clk.value=cfg.claudeKey||'';
+  renderAdvTabs();
 }
 function salvarConfig(){
-  cfg={nome:g('cfg-nome').value.trim(),oab:g('cfg-oab').value.trim(),nac:g('cfg-nac').value.trim(),civil:g('cfg-civil').value,end:g('cfg-end').value.trim(),cidade:g('cfg-cidade').value.trim(),uf:g('cfg-uf').value.trim(),cep:g('cfg-cep').value.trim(),wpp:g('cfg-wpp').value.trim(),email:g('cfg-email').value.trim(),site:g('cfg-site').value.trim(),honor:g('cfg-honor').value.trim()||'30',foro:g('cfg-foro').value.trim(),pdfPub:g('cfg-pdf-pub').value.trim(),pdfSec:g('cfg-pdf-sec').value.trim(),ejsService:g('cfg-ejs-service')?.value.trim()||'',ejsKey:g('cfg-ejs-key')?.value.trim()||'',ejsTplCob:g('cfg-ejs-tpl-cob')?.value.trim()||'',ejsTplLem:g('cfg-ejs-tpl-lem')?.value.trim()||'',autentiqueToken:g('cfg-autentique')?.value.trim()||'',claudeKey:g('cfg-claude-key')?.value.trim()||'',autentiqueProxy:g('cfg-autentique-proxy')?.value.trim()||''};
+  cfg.honor=g('cfg-honor').value.trim()||'30';
+  cfg.foro=g('cfg-foro').value.trim();
+  cfg.pdfPub=g('cfg-pdf-pub').value.trim();
+  cfg.pdfSec=g('cfg-pdf-sec').value.trim();
+  cfg.claudeKey=g('cfg-claude-key')?.value.trim()||'';
   localStorage.setItem(LS_CFG,JSON.stringify(cfg));
   toast('Configurações salvas!','ok');
 }
@@ -1272,6 +1494,8 @@ const TITLES={dashboard:'Dashboard',acessos:'Gerenciar Acessos',clientes:'Client
 let cur='dashboard';
 
 function go(id,el){
+  if(id==='pdf' && !recursoLiberado('pdf')){ abrirModalRecursoBloqueado('Ferramentas PDF'); return; }
+  if(id==='assinatura' && !recursoLiberado('assinatura')){ abrirModalRecursoBloqueado('Assinatura Digital'); return; }
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   const panel=g('p-'+id); if(!panel)return;
@@ -1332,6 +1556,22 @@ function renderDash(){
       if(fc){if(window._cF)window._cF.destroy();window._cF=new Chart(fc,{type:'bar',data:{labels:['Recebido','Pendente'],datasets:[{data:[rec,pend],backgroundColor:['#16a34a','#d97706'],borderRadius:6,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR')},grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}});}
     }
   }catch(e){}
+}
+
+function renderLimitBar(elId,dbKey,label){
+  const el=g(elId); if(!el)return;
+  const limite=limiteClientesAtual();
+  if(limite===Infinity){el.innerHTML='';return;}
+  const total=db[dbKey]?.length||0;
+  const pct=Math.min(100,Math.round(total/limite*100));
+  const cor=total>=limite?'var(--red-text)':(pct>=80?'var(--amber-text)':'var(--blue)');
+  el.innerHTML='<div class="card" style="padding:12px 16px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px">'
+    +'<span>Plano <strong>'+planoInfo().nome+'</strong> · '+label+': '+total+' / '+limite+'</span>'
+    +(total>=limite?'<button class="btn btn-p" style="font-size:11px;padding:4px 10px" onclick="abrirModalLimiteAtingido()"><i class="ti ti-arrow-up-circle"></i> Fazer upgrade</button>':'')
+    +'</div>'
+    +'<div style="background:var(--bg3);border-radius:8px;height:6px;overflow:hidden"><div style="background:'+cor+';height:100%;width:'+pct+'%"></div></div>'
+    +'</div>';
 }
 
 function renderClientes(){
@@ -1987,6 +2227,7 @@ const modalForms={
 
 function openModal(tipo,obj,_,data){
   modalType=tipo; mEditId=obj?obj.id:null; window._modalDate=data||''; _modalAcesso=false;
+  const sb0=g('modal-save-btn'); if(sb0)sb0.style.display='';
   const tN={cliente:'Novo cliente',processo:'Novo processo',tarefa:'Nova tarefa',financeiro:'Novo lançamento',lead:'Novo lead',evento:'Novo evento'};
   const tE={cliente:'Editar cliente',processo:'Editar processo',tarefa:'Editar tarefa',financeiro:'Editar lançamento',lead:'Editar lead',evento:'Editar evento'};
   g('modal-t').textContent=mEditId?(tE[tipo]||'Editar'):(tN[tipo]||'Novo');
@@ -2001,13 +2242,13 @@ async function saveModal(){
   if(_saving)return;
   // Modal de acesso
   if(_modalAcesso){
-    const email=g('nu-email')?.value.trim(); const nome=g('nu-nome')?.value.trim()||''; const plano=g('nu-plano')?.value||'básico';
+    const email=g('nu-email')?.value.trim(); const nome=g('nu-nome')?.value.trim()||''; const plano=g('nu-plano')?.value||'gratuito';
     if(!email){toast('E-mail é obrigatório.','err');return;}
     try{
       const _mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
       const r=await sheetsReq('GET','/'+_mid+'/values/Usu%C3%A1rios!A:A');
       const prox=(r.values?.length||1)+1;
-      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+_mid+'/values/Usu%C3%A1rios!A'+prox+':E'+prox+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[email,'ativo',plano,nome,new Date().toLocaleDateString('pt-BR')]]})});
+      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+_mid+'/values/Usu%C3%A1rios!A'+prox+':H'+prox+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[email,'ativo',plano,nome,new Date().toLocaleDateString('pt-BR'),'','0','0']]})});
       closeModal(); toast('Usuário '+email+' adicionado!','ok'); await carregarUsuarios();
     }catch(e){toast('Erro: '+e.message,'err');}
     return;
@@ -2017,6 +2258,11 @@ async function saveModal(){
   try{
     if(modalType==='cliente'){
       const nome=g('f0').value.trim(); if(!nome){toast('Nome é obrigatório.','err');return;}
+      if(!mEditId && db.clientes.length>=limiteClientesAtual()){
+        closeModal();
+        abrirModalLimiteAtingido();
+        return;
+      }
       const d={nome,cpf:g('f1').value,nascimento:g('f2').value,rg:g('f3').value,telefone:g('f4').value,email:g('f5').value,profissao:g('f6').value,estadoCivil:g('f7').value,rua:g('f8').value,bairro:g('f9').value,cep:g('f10').value,cidade:g('f11').value,estado:g('f12').value,area:g('f13').value,status:g('f14').value,obs:g('f15').value};
       if(mEditId)Object.assign(db.clientes.find(x=>x.id===mEditId),d);
       else db.clientes.push({id:genId(),driveFolderId:'',...d});
@@ -2649,46 +2895,6 @@ function importarCSV(txt,nome){
 }
 
 // ══════════════════════════════════════════════
-// 6. EMAILJS — E-mail automático
-// ══════════════════════════════════════════════
-function initEmailJS(){
-  if(cfg.ejsKey&&typeof emailjs!=='undefined'){
-    try{emailjs.init({publicKey:cfg.ejsKey});}catch(e){}
-  }
-}
-async function enviarEmailCobranca(clienteNome,valor,email){
-  carregarConfig();
-  if(!cfg.ejsKey||!cfg.ejsService||!cfg.ejsTplCob){
-    toast('Configure o EmailJS em Configurações primeiro.','err'); return;
-  }
-  if(!email){toast('Este cliente não tem e-mail cadastrado.','err');return;}
-  try{
-    initEmailJS();
-    await emailjs.send(cfg.ejsService,cfg.ejsTplCob,{
-      to_name:clienteNome,to_email:email,
-      valor:fmtMoney(valor),advogado:cfg.nome||'Advogado',
-      oab:cfg.oab||'',wpp:cfg.wpp||''
-    });
-    toast('E-mail de cobrança enviado para '+email+' ✓','ok');
-  }catch(e){toast('Erro ao enviar e-mail: '+(e.text||e.message||'verifique configurações'),'err');}
-}
-async function enviarEmailLembrete(clienteNome,email,descricao,data){
-  carregarConfig();
-  if(!cfg.ejsKey||!cfg.ejsService||!cfg.ejsTplLem){
-    toast('Configure o EmailJS em Configurações primeiro.','err'); return;
-  }
-  if(!email){toast('Este cliente não tem e-mail cadastrado.','err');return;}
-  try{
-    initEmailJS();
-    await emailjs.send(cfg.ejsService,cfg.ejsTplLem,{
-      to_name:clienteNome,to_email:email,
-      descricao,data:fmtDate(data)||data,advogado:cfg.nome||'Advogado',oab:cfg.oab||''
-    });
-    toast('E-mail de lembrete enviado! ✓','ok');
-  }catch(e){toast('Erro ao enviar e-mail: '+(e.text||e.message),'err');}
-}
-
-// ══════════════════════════════════════════════
 // 7. AUTENTIQUE — Assinatura Digital
 // ══════════════════════════════════════════════
 // ══════════════════════════════════════════════
@@ -2740,6 +2946,7 @@ function assinSelecionarCliente(){
     const nomeDocEl=g('assin-nome-doc'); if(nomeDocEl)nomeDocEl.value='';
     const wp=g('assin-wa-preview'); if(wp)wp.innerHTML='';
     g('assin-wa-link-area').style.display='none';
+    g('assin-dados-copiar').style.display='none';
     return;
   }
   const c=db.clientes.find(function(x){return x.id===sel.value;});
@@ -2768,6 +2975,45 @@ function assinSelecionarCliente(){
       g('assin-wa-link-area').style.display='none';
     }
   }
+
+  // Painel de dados para copiar e colar no Autentique
+  const dadosArea=g('assin-dados-copiar');
+  const dadosLista=g('assin-dados-lista');
+  if(dadosArea&&dadosLista){
+    const campos=[
+      {label:'Nome completo',valor:c.nome||''},
+      {label:'E-mail',valor:c.email||''},
+      {label:'Telefone/WhatsApp',valor:c.telefone||''},
+      {label:'CPF',valor:c.cpf||''}
+    ].filter(function(x){return x.valor;});
+    if(campos.length){
+      dadosLista.innerHTML=campos.map(function(x,i){
+        return '<div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;cursor:pointer" onclick="assinCopiarCampo(this,\''+he(x.valor).replace(/'/g,"\\'")+'\')">'
+          +'<span style="font-size:10px;color:var(--text3);min-width:110px">'+x.label+'</span>'
+          +'<span style="font-size:13px;font-weight:600;flex:1">'+he(x.valor)+'</span>'
+          +'<i class="ti ti-copy" style="font-size:14px;color:var(--text3)"></i>'
+          +'</div>';
+      }).join('');
+      dadosArea.style.display='block';
+    } else {
+      dadosArea.style.display='none';
+    }
+  }
+}
+
+function assinCopiarCampo(el,valor){
+  navigator.clipboard.writeText(valor).then(function(){
+    toast('Copiado: '+valor,'ok');
+  }).catch(function(){
+    const ta=document.createElement('textarea');
+    ta.value=valor; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Copiado: '+valor,'ok');
+  });
+}
+
+function assinMarcarAbriuAutentique(){
+  toast('Cole os dados do cliente nos campos do Autentique e envie o PDF baixado.','info');
 }
 
 function assinToggleTipo(){
@@ -2918,17 +3164,19 @@ async function renderAcessos(){
 async function carregarUsuarios(){
   const tbody=g('acessos-body'); if(!tbody)return;
   const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
-  if(!mid){tbody.innerHTML=emptyRow(6,'alert-circle','Conecte o Google para gerenciar acessos.');return;}
-  tbody.innerHTML=emptyRow(6,'loader','Carregando...');
+  if(!mid){tbody.innerHTML=emptyRow(9,'alert-circle','Conecte o Google para gerenciar acessos.');return;}
+  tbody.innerHTML=emptyRow(9,'loader','Carregando...');
   try{
-    const d=await sheetsReq('GET','/'+mid+'/values/Usu%C3%A1rios!A:E');
-    if(!d.values||d.values.length<2){tbody.innerHTML=emptyRow(6,'users','Nenhum usuário cadastrado.');return;}
+    const d=await sheetsReq('GET','/'+mid+'/values/Usu%C3%A1rios!A:H');
+    if(!d.values||d.values.length<2){tbody.innerHTML=emptyRow(9,'users','Nenhum usuário cadastrado.');return;}
     tbody.innerHTML=d.values.slice(1).map((row,i)=>{
-      const [email,status,plano,nome,data]=[row[0]||'',row[1]||'',row[2]||'',row[3]||'',row[4]||''];
+      const [email,status,plano,nome,dataCad,ultimoLogin,totalLogins,qtdClientes]=[row[0]||'',row[1]||'',row[2]||'',row[3]||'',row[4]||'',row[5]||'',row[6]||'0',row[7]||'0'];
+      if(!email)return'';
       const linha=i+2;
-      return`<tr><td>${email}</td><td>${nome||'—'}</td><td><span class="badge ${plano==='admin'?'bp':'bb'}">${plano||'básico'}</span></td><td><span class="badge ${status==='ativo'?'bg':'br'}">${status||'—'}</span></td><td>${data||'—'}</td><td><div style="display:flex;gap:4px">${plano!=='admin'?`<button class="btn ${status==='ativo'?'btn-r':''}" onclick="alterarStatusUsuario(${linha},'${status==='ativo'?'bloqueado':'ativo'}','${email}')"><i class="ti ti-${status==='ativo'?'lock':'lock-open'}"></i></button><button class="btn" onclick="removerUsuario(${linha},'${email}')"><i class="ti ti-trash"></i></button>`:'<span style="font-size:11px;color:var(--text3)">Admin</span>'}</div></td></tr>`;
+      const nomePlano=PLANOS_INFO[normalizarPlano(plano)]?.nome||plano||'Gratuito';
+      return`<tr><td>${email}</td><td>${nome||'—'}</td><td><span class="badge ${plano==='admin'?'bp':'bb'}">${plano==='admin'?'Admin':nomePlano}</span></td><td><span class="badge ${status==='ativo'?'bg':'br'}">${status||'—'}</span></td><td>${dataCad||'—'}</td><td>${ultimoLogin||'—'}</td><td style="text-align:center">${totalLogins||'0'}</td><td style="text-align:center">${qtdClientes||'0'}</td><td><div style="display:flex;gap:4px">${plano!=='admin'?`<button class="btn ${status==='ativo'?'btn-r':''}" onclick="alterarStatusUsuario(${linha},'${status==='ativo'?'bloqueado':'ativo'}','${email}')"><i class="ti ti-${status==='ativo'?'lock':'lock-open'}"></i></button><button class="btn" onclick="removerUsuario(${linha},'${email}')"><i class="ti ti-trash"></i></button>`:'<span style="font-size:11px;color:var(--text3)">Admin</span>'}</div></td></tr>`;
     }).join('');
-  }catch(e){tbody.innerHTML=emptyRow(6,'alert-circle','Erro ao carregar usuários.');}
+  }catch(e){tbody.innerHTML=emptyRow(9,'alert-circle','Erro ao carregar usuários.');}
 }
 async function alterarStatusUsuario(linha,novoStatus,email){
   if(!confirm((novoStatus==='bloqueado'?'Bloquear':'Liberar')+' acesso de '+email+'?'))return;
@@ -2939,13 +3187,163 @@ async function alterarStatusUsuario(linha,novoStatus,email){
 async function removerUsuario(linha,email){
   if(!confirm('Remover '+email+' permanentemente?'))return;
   const mid3=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
-  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid3+'/values/Usu%C3%A1rios!A'+linha+':E'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['','','','','']]})});
+  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid3+'/values/Usu%C3%A1rios!A'+linha+':H'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['','','','','','','','']]})});
   toast('Usuário removido.','ok'); await carregarUsuarios();
 }
+// ══ ASSISTENTE IA (Groq) ══
+function abrirAssistenteIA(){
+  if(!exigirRecurso('ia','Assistente Jurídico IA'))return;
+  if(!cfg.claudeKey){
+    toast('Configure sua chave Groq em Configurações primeiro.','err');
+    return;
+  }
+  g('overlay-ia').style.display='flex';
+  const msgs=g('ia-msgs');
+  if(msgs && !msgs.dataset.iniciado){
+    msgs.innerHTML='<div style="background:var(--purple-bg);color:var(--purple-text);border-radius:var(--r);padding:10px 14px;font-size:13px;align-self:flex-start;max-width:85%">Olá! Sou seu assistente jurídico. Posso ajudar com estratégias, petições, documentos e prazos. Como posso ajudar?</div>';
+    msgs.dataset.iniciado='1';
+  }
+}
+function fecharIA(){
+  g('overlay-ia').style.display='none';
+}
+function iaAddMsg(texto,tipo){
+  const msgs=g('ia-msgs'); if(!msgs)return;
+  const isUser=tipo==='user';
+  const div=document.createElement('div');
+  div.style.cssText='border-radius:var(--r);padding:10px 14px;font-size:13px;max-width:85%;white-space:pre-wrap;'
+    +(isUser?'background:var(--blue-bg);color:var(--blue-text);align-self:flex-end':'background:var(--purple-bg);color:var(--purple-text);align-self:flex-start');
+  div.textContent=texto;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+function iaSugestao(texto){
+  const input=g('ia-input');
+  if(input){ input.value=texto; }
+  enviarIA();
+}
+let _iaHistorico=[];
+async function enviarIA(){
+  if(!exigirRecurso('ia','Assistente Jurídico IA'))return;
+  const input=g('ia-input'); if(!input)return;
+  const texto=input.value.trim();
+  if(!texto)return;
+  if(!cfg.claudeKey){ toast('Configure sua chave Groq em Configurações primeiro.','err'); return; }
+  input.value='';
+  iaAddMsg(texto,'user');
+  _iaHistorico.push({role:'user',content:texto});
+  const pensando=iaAddMsg('Pensando...','ia');
+  try{
+    const contexto='Você é um assistente jurídico especializado em Direito Previdenciário e Direito da Saúde no Brasil, ajudando o advogado '+(cfg.nome||'')+(cfg.oab?(' ('+cfg.oab+')'):'')+'. Contexto do escritório: '+(db.clientes?.length||0)+' clientes, '+(db.processos?.length||0)+' processos, '+(db.tarefas?.length||0)+' tarefas cadastradas. Responda de forma direta, prática e tecnicamente precisa, em português do Brasil.';
+    const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.claudeKey},
+      body:JSON.stringify({
+        model:'llama-3.3-70b-versatile',
+        messages:[{role:'system',content:contexto},..._iaHistorico.slice(-10)],
+        temperature:0.4,
+        max_tokens:1000
+      })
+    });
+    const data=await resp.json();
+    pensando.remove();
+    if(data.error){
+      iaAddMsg('Erro: '+(data.error.message||'falha na chamada à IA'),'ia');
+      return;
+    }
+    const reply=data.choices?.[0]?.message?.content||'(sem resposta)';
+    iaAddMsg(reply,'ia');
+    _iaHistorico.push({role:'assistant',content:reply});
+  }catch(e){
+    pensando.remove();
+    iaAddMsg('Erro de conexão: '+e.message,'ia');
+  }
+}
+
+// ══ LIMITE DE PLANO / SOLICITAÇÃO DE UPGRADE ══
+async function garantirAbaUpgrade(){
+  const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
+  if(!mid)return;
+  try{
+    const meta=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid,{headers:{Authorization:'Bearer '+gToken}})).json();
+    const existe=(meta.sheets||[]).some(s=>s.properties.title==='SolicitacoesUpgrade');
+    if(!existe){
+      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({requests:[{addSheet:{properties:{title:'SolicitacoesUpgrade'}}}]})});
+      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/SolicitacoesUpgrade!A1?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['email','nome','data','status']]})});
+    }
+  }catch(e){console.warn('[Upgrade] erro ao garantir aba:',e.message);}
+}
+
+function abrirModalLimiteAtingido(){
+  g('modal-t').textContent='Limite do plano '+planoInfo().nome+' atingido';
+  g('modal-b').innerHTML=`
+    <div style="background:var(--amber-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--amber-text);display:flex;gap:8px;align-items:flex-start">
+      <i class="ti ti-lock" style="font-size:18px;margin-top:1px"></i>
+      <div>O plano <strong>${planoInfo().nome}</strong> permite cadastrar até <strong>${limiteClientesAtual()} clientes</strong>. Você já atingiu esse limite.</div>
+    </div>
+    <p style="font-size:13px;margin-bottom:10px">Para continuar cadastrando clientes sem limite, solicite o upgrade de plano:</p>
+    <button class="btn btn-p" style="width:100%;justify-content:center;padding:12px;margin-bottom:8px" onclick="enviarSolicitacaoUpgrade()">
+      <i class="ti ti-send"></i> Enviar solicitação de upgrade
+    </button>
+    <button class="btn" style="width:100%;justify-content:center;background:#25d366;color:#fff;border-color:#25d366" onclick="abrirWhatsAppUpgrade()">
+      <i class="ti ti-brand-whatsapp"></i> Falar agora no WhatsApp
+    </button>
+  `;
+  const sb=g('modal-save-btn'); if(sb)sb.style.display='none';
+  g('overlay').classList.add('open');
+}
+
+async function enviarSolicitacaoUpgrade(){
+  try{
+    await garantirAbaUpgrade();
+    const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
+    const r=await sheetsReq('GET','/'+mid+'/values/SolicitacoesUpgrade!A:A');
+    const prox=(r.values?.length||1)+1;
+    await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/SolicitacoesUpgrade!A'+prox+':D'+prox+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[gUser,cfg.nome||'',new Date().toLocaleDateString('pt-BR')+' '+new Date().toLocaleTimeString('pt-BR'),'pendente']]})});
+    toast('Solicitação enviada! Você será notificado quando for liberado.','ok');
+  }catch(e){toast('Erro ao enviar solicitação: '+e.message,'err');}
+}
+
+function abrirWhatsAppUpgrade(){
+  const msg='Olá! Sou usuário do Organiza CRM (e-mail: '+(gUser||'—')+') e gostaria de solicitar o upgrade de plano. Estou no plano '+planoInfo().nome+' e atingi o limite de '+limiteClientesAtual()+' clientes (ou preciso de um recurso bloqueado).';
+  window.open('https://wa.me/5562995799323?text='+encodeURIComponent(msg),'_blank');
+}
+
+async function carregarSolicitacoesUpgrade(){
+  if(gUser!==ADMIN_EMAIL)return [];
+  try{
+    await garantirAbaUpgrade();
+    const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
+    const r=await sheetsReq('GET','/'+mid+'/values/SolicitacoesUpgrade!A2:D');
+    return (r.values||[]).map((row,i)=>({linha:i+2,email:row[0]||'',nome:row[1]||'',data:row[2]||'',status:row[3]||'pendente'})).filter(x=>x.email);
+  }catch(e){return [];}
+}
+
+async function marcarSolicitacaoAtendida(linha){
+  const mid=MASTER_SHEET_FIXED||MASTER_SHEET_ID;
+  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+mid+'/values/SolicitacoesUpgrade!D'+linha+'?valueInputOption=RAW',{method:'PUT',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['atendido']]})});
+  toast('Marcado como atendido.','ok');
+  await renderNotificacoesUpgrade();
+}
+
+async function renderNotificacoesUpgrade(){
+  const el=g('notif-upgrade-area'); if(!el)return;
+  if(gUser!==ADMIN_EMAIL){el.innerHTML='';return;}
+  const lista=await carregarSolicitacoesUpgrade();
+  const pendentes=lista.filter(x=>x.status==='pendente');
+  if(!pendentes.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="card" style="margin-bottom:16px;border-color:var(--amber-text)">'
+    +'<div class="ch"><span class="ct"><i class="ti ti-bell" style="color:var(--amber-text)"></i> Solicitações de upgrade pendentes ('+pendentes.length+')</span></div>'
+    +'<div class="tbl-wrap"><table><thead><tr><th>E-mail</th><th>Nome</th><th>Data</th><th>Ações</th></tr></thead><tbody>'
+    +pendentes.map(x=>'<tr><td>'+he(x.email)+'</td><td>'+he(x.nome)+'</td><td>'+he(x.data)+'</td><td><button class="btn btn-p" style="font-size:11px;padding:4px 10px" onclick="marcarSolicitacaoAtendida('+x.linha+')"><i class="ti ti-check"></i> Marcar atendido</button></td></tr>').join('')
+    +'</tbody></table></div></div>';
+}
+
 function abrirModalNovoUsuario(){
   _modalAcesso=true;
   g('modal-t').textContent='Adicionar usuário';
-  g('modal-b').innerHTML=`<div class="fg"><label class="fl">E-mail do cliente *</label><input class="fi" id="nu-email" type="email" placeholder="cliente@gmail.com"></div><div class="fgrid"><div class="fg"><label class="fl">Nome</label><input class="fi" id="nu-nome" placeholder="Nome completo"></div><div class="fg"><label class="fl">Plano</label><select class="fi" id="nu-plano"><option value="básico">Básico</option><option value="premium">Premium</option></select></div></div><div style="background:var(--blue-bg);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Após adicionar, compartilhe o link de acesso com o usuário.</div>`;
+  g('modal-b').innerHTML=`<div class="fg"><label class="fl">E-mail do cliente *</label><input class="fi" id="nu-email" type="email" placeholder="cliente@gmail.com"></div><div class="fgrid"><div class="fg"><label class="fl">Nome</label><input class="fi" id="nu-nome" placeholder="Nome completo"></div><div class="fg"><label class="fl">Plano</label><select class="fi" id="nu-plano"><option value="gratuito">Gratuito (até 20 clientes)</option><option value="essencial">Essencial — R$ 19,90 (até 200 clientes)</option><option value="premium">Profissional — R$ 29,90 (ilimitado)</option></select></div></div><div style="background:var(--blue-bg);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Após adicionar, compartilhe o link de acesso com o usuário.</div>`;
   g('overlay').classList.add('open');
   setTimeout(()=>{const fi=g('modal-b').querySelector('input');if(fi)fi.focus();},50);
 }
@@ -2963,8 +3361,10 @@ function copiarLink(){
     gUser=savedUser;
     sheetId=savedSheet||'';
     MASTER_SHEET_ID=MASTER_SHEET_FIXED||localStorage.getItem(LS_MASTER)||'';
-    if(ADMINS.includes(gUser.toLowerCase()))
+    if(ADMINS.includes(gUser.toLowerCase())){
       g('nav-acessos').style.display='flex';
+      meuPlano='premium'; localStorage.setItem(LS_PLANO,meuPlano);
+    }
     g('login-screen').style.display='none';
     g('app').classList.add('visible');
     carregarConfig(); carregarLocal(); renderAll(); atualizarPills();
