@@ -3085,8 +3085,11 @@ async function assinEnviar(){
 
     // Usa proxy PHP se configurado (necessário para GitHub Pages — resolve CORS)
     const urlAutentique=cfg.autentiqueProxy||'https://api.autentique.com.br/2/graphql';
-    const headersAutentique={Authorization:'Bearer '+cfg.autentiqueToken};
-    // Se usando proxy, o token vai no header mas o proxy repassa ao Autentique
+    // Passa token em dois headers para garantir compatibilidade com o proxy PHP
+    const headersAutentique={
+      'Authorization':'Bearer '+cfg.autentiqueToken,
+      'X-Autentique-Token':cfg.autentiqueToken
+    };
     const r=await fetch(urlAutentique,{
       method:'POST',
       headers:headersAutentique,
