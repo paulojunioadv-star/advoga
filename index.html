@@ -3095,8 +3095,11 @@ async function assinEnviar(){
       headers:headersAutentique,
       body:form
     });
-    const d=await r.json();
-    if(d.errors&&d.errors.length){throw new Error(d.errors[0].message);}
+    let d;
+    try{ d=await r.json(); }
+    catch(je){ throw new Error('Proxy retornou resposta inválida (status '+r.status+'). Verifique se o proxy PHP está acessível em: '+urlAutentique); }
+    if(!r.ok){ throw new Error('Proxy HTTP '+r.status+': '+(d?.error||d?.message||JSON.stringify(d))); }
+    if(d.errors&&d.errors.length){ throw new Error('Autentique: '+d.errors[0].message); }
 
     const docData=d.data?.createDocument;
     const link=docData?.signatures?.[0]?.link?.short_link||'';
@@ -3123,11 +3126,8 @@ async function assinEnviar(){
   }catch(e){
     hideLoading();
     const msg=e.message||'Erro desconhecido';
-    if(msg.includes('401')||msg.includes('Unauthenticated')||msg.includes('token')){
-      toast('Token do Autentique inválido. Verifique em Configurações.','err');
-    } else {
-      toast('Erro Autentique: '+msg,'err');
-    }
+    console.error('[Autentique] Erro completo:',e);
+    toast('Erro Autentique: '+msg,'err');
   }
 }
 
