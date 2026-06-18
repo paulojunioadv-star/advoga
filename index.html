@@ -20,21 +20,10 @@
   --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-text:#5b21b6;
   --r:8px;--rl:12px;--sw:220px;
 }
-html[data-theme="dark"]{
-  --bg:#0a0e27;--bg2:#1a1f3a;--bg3:#252d4a;
-  --text:#e4e6eb;--text2:#a8adb5;--text3:#7a7f8f;
-  --border:#2d3548;
-  --blue:#00d4ff;--blue-bg:#001a2e;--blue-text:#00d4ff;
-  --green:#00ff88;--green-bg:#001a0d;--green-text:#00ff88;
-  --amber:#ffaa00;--amber-bg:#2a1a00;--amber-text:#ffaa00;
-  --red:#ff3366;--red-bg:#2a0a15;--red-text:#ff3366;
-  --purple:#bb00ff;--purple-bg:#2a0a3a;--purple-text:#bb00ff;
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;transition:background-color .25s ease,color .25s ease}
-html[data-theme="dark"] body{background-image:radial-gradient(circle at 20% 50%, rgba(0,212,255,0.05) 0%, transparent 50%),radial-gradient(circle at 80% 80%, rgba(187,0,255,0.05) 0%, transparent 50%);background-attachment:fixed}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
 
 /* LOGIN */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;padding:16px;position:relative}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;padding:16px}
 .lcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:40px 36px;width:100%;max-width:380px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .llogo{text-align:center;margin-bottom:28px}
 .llogo-icon{font-size:40px;color:var(--blue);margin-bottom:8px}
@@ -135,9 +124,8 @@ tr:hover td{background:var(--bg3)}
 .ss{font-size:11px;color:var(--text2)}
 
 /* FORM */
-.fi{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;background:var(--bg);color:var(--text);font-family:inherit}
+.fi{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;background:var(--bg);font-family:inherit}
 .fi:focus{border-color:var(--blue)}
-select.fi option{background:var(--bg2);color:var(--text)}
 .fl{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
 .fg{margin-bottom:12px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -173,11 +161,6 @@ select.fi option{background:var(--bg2);color:var(--text)}
 .cev.outro,.cev.compromisso{background:var(--blue-bg);color:var(--blue-text)}
 .cev.tarefa{background:#fef3c7;color:#92400e}
 .cev.processo{background:#fce7f3;color:#9d174d}
-html[data-theme="dark"] .cev.audiencia{background:rgba(0,212,255,0.2);color:var(--blue)}
-html[data-theme="dark"] .cev.prazo{background:rgba(255,51,102,0.2);color:var(--red)}
-html[data-theme="dark"] .cev.reuniao{background:rgba(187,0,255,0.2);color:var(--purple)}
-html[data-theme="dark"] .cev.tarefa{background:rgba(255,170,0,0.2);color:var(--amber)}
-html[data-theme="dark"] .cev.processo{background:rgba(255,51,102,0.2);color:var(--red)}
 .cev-more{font-size:10px;color:var(--text3);font-weight:500}
 
 /* KANBAN */
@@ -204,21 +187,6 @@ html[data-theme="dark"] .cev.processo{background:rgba(255,51,102,0.2);color:var(
 /* CONFIGS */
 .cfg-s{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:16px}
 .cfg-t{font-size:14px;font-weight:600;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-
-/* THEME SWITCH */
-.theme-switch{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.theme-switch-label{font-size:11px;font-weight:600;color:var(--text2);flex:1;display:flex;align-items:center;gap:6px}
-.theme-switch-label i{font-size:13px}
-.theme-toggle{position:relative;width:44px;height:24px;border-radius:99px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;flex-shrink:0;transition:background .2s ease}
-.theme-toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--blue);transition:transform .25s ease,background .2s ease;display:flex}
-html[data-theme="dark"] .theme-toggle::after{transform:translateX(20px)}
-.theme-toggle-icon{position:absolute;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none;transition:opacity .2s ease}
-.theme-toggle-icon.sun{left:5px;color:var(--amber);opacity:1}
-.theme-toggle-icon.moon{right:5px;color:var(--text3);opacity:.5}
-html[data-theme="dark"] .theme-toggle-icon.sun{opacity:.4}
-html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
-.topbar-theme-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);cursor:pointer;color:var(--text2);font-size:15px;flex-shrink:0;transition:background .15s ease}
-.topbar-theme-btn:hover{background:var(--bg3);color:var(--text)}
 
 /* TOAST */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;padding:10px 16px;border-radius:var(--r);font-size:13px;z-index:9999;display:none;max-width:300px;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:su .2s ease}
@@ -349,7 +317,6 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
 
 <!-- LOGIN -->
 <div id="login-screen">
-  <button class="topbar-theme-btn" id="login-theme-btn" onclick="toggleTheme()" title="Alternar tema claro/escuro" style="position:absolute;top:16px;right:16px"><i class="ti ti-moon-filled" id="login-theme-icon"></i></button>
   <div class="lcard">
     <div class="llogo">
       <div class="llogo-icon"><i class="ti ti-scale"></i></div>
@@ -394,13 +361,6 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
       <div class="ni" onclick="abrirAssistenteIA()" id="nav-ia" style="color:var(--purple-text)"><i class="ti ti-robot"></i> Assistente IA <span class="premium-lock" style="margin-left:auto;font-size:9px"><i class="ti ti-sparkles"></i></span></div>
       <div class="ni" onclick="go('configuracoes',this)"><i class="ti ti-settings"></i> Configurações</div>
     </div>
-    <div class="theme-switch">
-      <span class="theme-switch-label" id="theme-switch-label"><i class="ti ti-sun-filled"></i> Tema claro</span>
-      <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" role="button" aria-label="Alternar tema claro/escuro">
-        <span class="theme-toggle-icon sun"><i class="ti ti-sun-filled"></i></span>
-        <span class="theme-toggle-icon moon"><i class="ti ti-moon-filled"></i></span>
-      </div>
-    </div>
     <div class="sfoot">
       <div class="suser" id="drive-st">Não conectado ao Google</div>
       <div class="sout" onclick="doLogout()"><i class="ti ti-logout"></i> Sair</div>
@@ -412,7 +372,6 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
       <button class="btn" id="menu-btn" onclick="openSidebar()" style="display:none"><i class="ti ti-menu-2"></i></button>
       <span class="topbar-t" id="ttitle">Dashboard</span>
       <span id="today-date" style="font-size:11px;color:var(--text3);flex-shrink:0"></span>
-      <button class="topbar-theme-btn" id="topbar-theme-btn" onclick="toggleTheme()" title="Alternar tema claro/escuro"><i class="ti ti-moon-filled" id="topbar-theme-icon"></i></button>
       <button class="btn" onclick="sincTudo()" title="Sincronizar"><i class="ti ti-refresh"></i></button>
     </div>
     <div class="content">
@@ -595,16 +554,18 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
 <!-- ASSINATURA DIGITAL -->
 <div class="panel" id="p-assinatura">
 
-  <!-- Header com status do Autentique -->
-  <div id="assin-status-bar" style="margin-bottom:14px"></div>
+  <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text);display:flex;align-items:flex-start;gap:8px">
+    <i class="ti ti-info-circle" style="font-size:16px;margin-top:1px"></i>
+    <div>Gere o documento aqui, baixe o PDF e clique em <strong>"Abrir no Autentique"</strong> para fazer o upload e enviar para assinatura em poucos cliques.</div>
+  </div>
 
-  <!-- Enviar documento para assinar -->
+  <!-- Gerar documento -->
   <div class="assin-card">
     <div class="assin-card-h">
       <i class="ti ti-writing-sign" style="font-size:18px;color:var(--blue)"></i>
       <div>
-        <div style="font-weight:700;font-size:14px">Enviar documento para assinatura</div>
-        <div style="font-size:11px;color:var(--text3)">Upload de PDF ou documento gerado no CRM</div>
+        <div style="font-weight:700;font-size:14px">Preparar documento para assinatura</div>
+        <div style="font-size:11px;color:var(--text3)">Selecione o cliente e gere ou baixe o PDF</div>
       </div>
     </div>
     <div class="assin-card-body">
@@ -617,7 +578,7 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
           </select>
         </div>
         <div class="fg">
-          <label class="fl">E-mail do signatário *</label>
+          <label class="fl">E-mail do signatário</label>
           <input class="fi" id="assin-email" placeholder="email@exemplo.com">
         </div>
       </div>
@@ -628,11 +589,11 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
         </div>
         <div class="fg">
           <label class="fl">Tipo de documento</label>
-          <select class="fi" id="assin-tipo">
-            <option value="upload">📎 Upload de PDF</option>
-            <option value="procuracao">⚖️ Procuração Ad Judicia</option>
-            <option value="contrato">📄 Contrato de Honorários</option>
-            <option value="hipossuficiencia">📋 Decl. Hipossuficiência</option>
+          <select class="fi" id="assin-tipo" onchange="assinToggleTipo()">
+            <option value="upload">📎 Já tenho o PDF (vou enviar do meu computador)</option>
+            <option value="procuracao">⚖️ Gerar Procuração Ad Judicia</option>
+            <option value="contrato">📄 Gerar Contrato de Honorários</option>
+            <option value="hipossuficiencia">📋 Gerar Decl. Hipossuficiência</option>
           </select>
         </div>
       </div>
@@ -655,15 +616,25 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
         </div>
       </div>
 
-      <!-- Mensagem WhatsApp -->
+      <!-- WhatsApp info -->
       <div style="background:var(--green-bg);border-radius:var(--r);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--green-text);display:flex;align-items:flex-start;gap:8px">
         <i class="ti ti-brand-whatsapp" style="font-size:16px;margin-top:1px"></i>
-        <div><strong>Notificação WhatsApp automática:</strong> após enviar para assinatura, o sistema abre automaticamente o WhatsApp do cliente com o link do documento. <span id="assin-wa-preview"></span></div>
+        <div>Depois de enviar no Autentique, copie o link e use o botão de WhatsApp abaixo para mandar ao cliente. <span id="assin-wa-preview"></span></div>
       </div>
 
-      <button class="btn btn-p" onclick="assinEnviar()" style="width:100%;justify-content:center;padding:12px">
-        <i class="ti ti-send"></i> Enviar para assinatura digital
-      </button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="assinBaixarPDF()" style="flex:1;justify-content:center;padding:12px;min-width:200px">
+          <i class="ti ti-download"></i> Baixar PDF do documento
+        </button>
+        <a class="btn" href="https://painel.autentique.com.br/documentos/novo" target="_blank" style="flex:1;justify-content:center;padding:12px;min-width:200px;text-decoration:none">
+          <i class="ti ti-external-link"></i> Abrir no Autentique
+        </a>
+      </div>
+      <div id="assin-wa-link-area" style="display:none;margin-top:12px">
+        <button class="btn" style="width:100%;justify-content:center;background:#25d366;color:#fff;border-color:#25d366" onclick="assinEnviarWhatsAppManual()">
+          <i class="ti ti-brand-whatsapp"></i> Enviar link por WhatsApp
+        </button>
+      </div>
     </div>
   </div>
 
@@ -802,9 +773,7 @@ html[data-theme="dark"] .theme-toggle-icon.moon{opacity:1;color:var(--blue)}
     <div class="fgrid"><div class="fg"><label class="fl">Template — Cobrança</label><input class="fi" id="cfg-ejs-tpl-cob" placeholder="template_xxxxxxx"></div><div class="fg"><label class="fl">Template — Lembrete</label><input class="fi" id="cfg-ejs-tpl-lem" placeholder="template_xxxxxxx"></div></div>
   </div>
   <div class="cfg-s"><div class="cfg-t"><i class="ti ti-writing-sign"></i> Autentique — Assinatura Digital</div>
-    <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Acesse <a href="https://autentique.com.br" target="_blank" style="color:var(--blue);font-weight:600">autentique.com.br</a> → Configurações → Integrações → Copie seu token de API.</div>
-    <div class="fg"><label class="fl">Token de API</label><input class="fi" id="cfg-autentique" placeholder="seu-token-aqui" type="password"></div>
-    <div class="fg"><label class="fl">URL do Proxy PHP <span style="font-size:10px;color:var(--text3)">(opcional — necessário para GitHub Pages)</span></label><input class="fi" id="cfg-autentique-proxy" placeholder="https://organizacrm.online/autentique-proxy.php"></div>
+    <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Use a aba <strong>Assinatura Digital</strong> no menu para gerar/baixar documentos. O envio é feito manualmente direto no painel do <a href="https://painel.autentique.com.br" target="_blank" style="color:var(--blue);font-weight:600">autentique.com.br</a>.</div>
   </div>
   <div class="cfg-s"><div class="cfg-t"><i class="ti ti-robot"></i> Groq IA — Assistente Jurídico (Gratuito)</div>
     <div style="background:var(--green-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--green-text)"><i class="ti ti-check"></i> <strong>100% gratuito!</strong> Acesse <a href="https://console.groq.com/keys" target="_blank" style="color:var(--green);font-weight:600">console.groq.com/keys</a> → faça login com Google → "Create API Key" → cole aqui. Sem cartão, sem faturamento.</div>
@@ -870,7 +839,6 @@ const LS_SHEET = 'advoga_sheet_id';
 const LS_MASTER= 'advoga_master_sheet';
 const LS_USER  = 'advoga_user';
 const LS_TEXP  = 'advoga_token_exp';
-const LS_THEME = 'advoga_theme';
 
 // ══ ESTADO ══
 let gToken='', gUser='', sheetId='', MASTER_SHEET_ID='';
@@ -879,37 +847,6 @@ let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 let tipoDocAtual='padrao', pdfArquivo=null, mergeArquivos=[];
 let cfg={nome:'',oab:'',nac:'brasileiro(a)',civil:'solteiro(a)',end:'',cidade:'',uf:'GO',cep:'',wpp:'',email:'',site:'',honor:'30',foro:'',pdfPub:'',pdfSec:'',ejsService:'',ejsKey:'',ejsTplCob:'',ejsTplLem:'',autentiqueToken:'',claudeKey:'',autentiqueProxy:''};
 let db={clientes:[],processos:[],tarefas:[],financeiro:[],leads:[],eventos:[],kbProc:[],kbPrazos:[]};
-
-// ══ TEMA (claro / escuro) ══
-function aplicarTema(tema){
-  const t=tema==='dark'?'dark':'light';
-  document.documentElement.setAttribute('data-theme',t);
-  localStorage.setItem(LS_THEME,t);
-  const isDark=t==='dark';
-  // Ícones e textos dos botões/switch
-  const lbl=g('theme-switch-label');
-  if(lbl)lbl.innerHTML=isDark?'<i class="ti ti-moon-filled"></i> Tema escuro':'<i class="ti ti-sun-filled"></i> Tema claro';
-  const topIcon=g('topbar-theme-icon');
-  if(topIcon)topIcon.className='ti '+(isDark?'ti-sun-filled':'ti-moon-filled');
-  const loginIcon=g('login-theme-icon');
-  if(loginIcon)loginIcon.className='ti '+(isDark?'ti-sun-filled':'ti-moon-filled');
-  // Meta theme-color (barra do navegador / PWA)
-  const metaTheme=document.querySelector('meta[name="theme-color"]');
-  if(metaTheme)metaTheme.setAttribute('content',isDark?'#0a0e27':'#1a6cf5');
-  // Re-renderiza gráficos do dashboard com as cores corretas, se já estiverem na tela
-  if(typeof renderDash==='function'){ try{ renderDash(); }catch(e){} }
-}
-function toggleTheme(){
-  const atual=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
-  aplicarTema(atual==='dark'?'light':'dark');
-}
-(function initTema(){
-  const salvo=localStorage.getItem(LS_THEME);
-  if(salvo==='dark'||salvo==='light'){ aplicarTema(salvo); return; }
-  const prefereDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
-  aplicarTema(prefereDark?'dark':'light');
-})();
-
 
 // ══ LOADING ══
 function showLoading(msg='Carregando...'){
@@ -1317,8 +1254,6 @@ function carregarConfig(){
   const ejsk=g('cfg-ejs-key'); if(ejsk)ejsk.value=cfg.ejsKey||'';
   const ejsc=g('cfg-ejs-tpl-cob'); if(ejsc)ejsc.value=cfg.ejsTplCob||'';
   const ejsl=g('cfg-ejs-tpl-lem'); if(ejsl)ejsl.value=cfg.ejsTplLem||'';
-  const autq=g('cfg-autentique'); if(autq)autq.value=cfg.autentiqueToken||'';
-  const autqp=g('cfg-autentique-proxy'); if(autqp)autqp.value=cfg.autentiqueProxy||'';
   const clk=g('cfg-claude-key'); if(clk)clk.value=cfg.claudeKey||'';
 }
 function salvarConfig(){
@@ -1389,17 +1324,12 @@ function renderDash(){
 
   try{
     if(typeof Chart!=='undefined'){
-      const isDark=document.documentElement.getAttribute('data-theme')==='dark';
-      const tickColor=isDark?'#a8adb5':'#6b6b6b';
-      const gridColor=isDark?'rgba(255,255,255,.06)':'#f0f0f0';
-      const borderClr=isDark?'#1a1f3a':'#fff';
       const areaCount={}; db.clientes.forEach(c=>{const a=c.area||'Outros';areaCount[a]=(areaCount[a]||0)+1;});
       const areas=Object.keys(areaCount);
-      const cores=isDark?['#00d4ff','#00ff88','#ffaa00','#bb00ff','#ff3366','#22d3ee','#fb923c']:['#1a6cf5','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2','#ea580c'];
-      const corRec=isDark?'#00ff88':'#16a34a', corPend=isDark?'#ffaa00':'#d97706';
+      const cores=['#1a6cf5','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2','#ea580c'];
       const ac=g('chart-areas'); const fc=g('chart-fin');
-      if(ac){if(window._cA)window._cA.destroy();if(areas.length)window._cA=new Chart(ac,{type:'doughnut',data:{labels:areas,datasets:[{data:areas.map(a=>areaCount[a]),backgroundColor:cores.slice(0,areas.length),borderWidth:2,borderColor:borderClr}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,color:tickColor}}}}});}
-      if(fc){if(window._cF)window._cF.destroy();window._cF=new Chart(fc,{type:'bar',data:{labels:['Recebido','Pendente'],datasets:[{data:[rec,pend],backgroundColor:[corRec,corPend],borderRadius:6,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:tickColor,callback:v=>'R$'+v.toLocaleString('pt-BR')},grid:{color:gridColor}},x:{ticks:{color:tickColor},grid:{display:false}}}}});}
+      if(ac){if(window._cA)window._cA.destroy();if(areas.length)window._cA=new Chart(ac,{type:'doughnut',data:{labels:areas,datasets:[{data:areas.map(a=>areaCount[a]),backgroundColor:cores.slice(0,areas.length),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});}
+      if(fc){if(window._cF)window._cF.destroy();window._cF=new Chart(fc,{type:'bar',data:{labels:['Recebido','Pendente'],datasets:[{data:[rec,pend],backgroundColor:['#16a34a','#d97706'],borderRadius:6,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR')},grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}});}
     }
   }catch(e){}
 }
@@ -1815,7 +1745,7 @@ function renderDrive(){
         ?'<a class="btn btn-p" href="https://drive.google.com/drive/folders/'+window._crmRootFolderId+'" target="_blank" style="margin-left:auto"><i class="ti ti-external-link"></i> Abrir pasta raiz</a>'
         :'<button class="btn" onclick="abrirPastaRaizDrive()" style="margin-left:auto"><i class="ti ti-folder-open"></i> Abrir pasta raiz</button>';
       el.innerHTML='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
-        +'<i class="ti ti-brand-google-drive" style="font-size:18px;color:var(--blue)"></i>'
+        +'<i class="ti ti-brand-google-drive" style="font-size:18px;color:#1a6cf5"></i>'
         +'<div><div style="font-weight:600;font-size:13px">Drive conectado: '+gUser+'</div>'
         +'<div style="font-size:11px;color:var(--text3)">Pastas automáticas por cliente no Google Drive.</div></div>'
         +rootBtn+'</div>';
@@ -2761,191 +2691,33 @@ async function enviarEmailLembrete(clienteNome,email,descricao,data){
 // ══════════════════════════════════════════════
 // 7. AUTENTIQUE — Assinatura Digital
 // ══════════════════════════════════════════════
-async function autentiqueEnviar(nomeDoc,emailDestinatario,nomeDestinatario,conteudoBase64){
-  carregarConfig();
-  if(!cfg.autentiqueToken){toast('Configure o token do Autentique em Configurações.','err');return false;}
-  const query=`mutation {
-    createDocument(
-      document: { name: "${nomeDoc.replace(/"/g,"'")}" }
-      signers: [{ email: "${emailDestinatario}", name: "${nomeDestinatario}", action: SIGN }]
-      file: { contents: "${conteudoBase64}", name: "${nomeDoc}.pdf" }
-    ) { id name link { short_link } }
-  }`;
-  try{
-    const r=await fetch('https://api.autentique.com.br/2/graphql',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.autentiqueToken},
-      body:JSON.stringify({query})
-    });
-    const d=await r.json();
-    if(d.errors)throw new Error(d.errors[0].message);
-    const link=d.data?.createDocument?.link?.short_link||'';
-    toast('Documento enviado para assinatura! Link: '+link,'ok');
-    return link;
-  }catch(e){toast('Erro Autentique: '+e.message,'err');return false;}
-}
+// ══════════════════════════════════════════════
+// ASSINATURA DIGITAL — fluxo simplificado (sem API)
+// O advogado gera/baixa o PDF aqui e envia manualmente no site do Autentique
+// ══════════════════════════════════════════════
+let _assinPdfAtual=null; // {blob, nome}
+
 async function assinarDocumentoCliente(clienteNome){
-  const c=db.clientes.find(x=>x.nome===clienteNome);
-  if(!c||!c.email){toast('Cliente sem e-mail cadastrado.','err');return;}
-  if(!cfg.autentiqueToken){toast('Configure o Autentique em Configurações.','err');return;}
-  // Gera PDF simples do contrato de honorários
-  if(typeof window.jspdf==='undefined'){toast('Biblioteca PDF carregando...','err');return;}
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF();
-  doc.setFontSize(14); doc.setFont('helvetica','bold');
-  doc.text('CONTRATO DE HONORÁRIOS ADVOCATÍCIOS',20,20);
-  doc.setFontSize(11); doc.setFont('helvetica','normal');
-  const texto=`
-Contratante: ${c.nome}
-Advogado: ${cfg.nome||''} · ${cfg.oab||''}
-
-O presente instrumento tem por objeto a prestação de serviços advocatícios.
-
-Honorários: ${cfg.honor||'30'}% sobre o valor obtido.
-
-Assinado digitalmente via Autentique.`;
-  const linhas=doc.splitTextToSize(texto,170);
-  doc.text(linhas,20,35);
-  const pdfB64=doc.output('datauristring').split(',')[1];
-  showLoading('Enviando para assinatura...');
-  await autentiqueEnviar('Contrato-'+c.nome,c.email,c.nome,pdfB64);
-  hideLoading();
+  // Mantido por compatibilidade — redireciona para o fluxo da aba Assinatura Digital
+  go('assinatura',null);
+  setTimeout(function(){
+    const sel=g('assin-cli');
+    const c=db.clientes.find(function(x){return x.nome===clienteNome;});
+    if(sel&&c){sel.value=c.id;assinSelecionarCliente();}
+  },300);
 }
-
-// ══════════════════════════════════════════════
-// 8. ASSISTENTE IA — Claude API
-// ══════════════════════════════════════════════
-let _iaHistorico=[];
-function abrirAssistenteIA(){
-  carregarConfig();
-  const ov=g('overlay-ia');
-  if(ov){ov.style.display='flex'; _iaHistorico=[];}
-  const msgs=g('ia-msgs');
-  if(msgs){
-    msgs.innerHTML=`<div style="background:var(--purple-bg);border-radius:var(--r);padding:12px;font-size:12px;color:var(--purple-text)">
-      <i class="ti ti-robot"></i> <strong>Olá, Dr. ${cfg.nome?cfg.nome.split(' ')[1]||cfg.nome.split(' ')[0]:'Advogado'}!</strong><br>
-      Sou seu assistente jurídico IA. Posso ajudar com estratégias processuais, minutas de petições, análise de prazos e muito mais.<br>
-      <small style="opacity:.8">${cfg.claudeKey?'✓ Groq API configurada — gratuita!':'⚠ Configure sua chave Groq em Configurações → Groq IA. É gratuito!'}</small>
-    </div>`;
-  }
-}
-function fecharIA(){ const ov=g('overlay-ia'); if(ov)ov.style.display='none'; }
-function iaSugestao(txt){ const inp=g('ia-input'); if(inp){inp.value=txt;inp.focus();} }
-function iaAddMsg(role,txt){
-  const msgs=g('ia-msgs'); if(!msgs)return;
-  const isUser=role==='user';
-  const div=document.createElement('div');
-  div.style.cssText=`display:flex;gap:8px;align-items:flex-start;${isUser?'flex-direction:row-reverse':''}`;
-  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${isUser?'var(--blue)':'var(--purple)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff">
-    <i class="ti ${isUser?'ti-user':'ti-robot'}"></i></div>
-  <div style="background:${isUser?'var(--blue-bg)':'var(--bg3)'};border-radius:var(--rl);padding:10px 12px;font-size:12px;max-width:85%;line-height:1.5;white-space:pre-wrap">${he(txt)}</div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-}
-async function enviarIA(){
-  carregarConfig();
-  const inp=g('ia-input'); if(!inp||!inp.value.trim())return;
-  if(!cfg.claudeKey){toast('Configure sua chave Groq em Configurações → Groq IA (é gratuito!).','err');return;}
-  const pergunta=inp.value.trim(); inp.value='';
-  iaAddMsg('user',pergunta);
-  _iaHistorico.push({role:'user',content:pergunta});
-
-  // Loading
-  const msgs=g('ia-msgs');
-  const loadDiv=document.createElement('div');
-  loadDiv.id='ia-loading';
-  loadDiv.style.cssText='display:flex;gap:8px;align-items:center;color:var(--text3);font-size:12px;padding:4px 0';
-  loadDiv.innerHTML='<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Consultando Gemini...';
-  msgs.appendChild(loadDiv);
-  msgs.scrollTop=msgs.scrollHeight;
-
-  // Contexto jurídico
-  const sistemaPrompt='Você é um assistente jurídico integrado ao Organiza CRM, usado pelo advogado '
-    +(cfg.nome||'Dr.')+' ('+(cfg.oab||'OAB')+'), com escritório em '+(cfg.cidade||'Goiás')+'. '
-    +'O CRM tem '+db.clientes.length+' clientes, '+db.processos.length+' processos e '
-    +db.tarefas.filter(t=>t.status!=='concluida').length+' tarefas pendentes. '
-    +'Responda de forma objetiva, profissional e em português brasileiro. '
-    +'Cite legislação e jurisprudência relevante quando aplicável. '
-    +'Seja direto e prático, focado na realidade do advogado brasileiro.';
-
-  // Groq API — OpenAI-compatible, gratuita
-  // Histórico no formato OpenAI: {role:'user'|'assistant', content:'...'}
-  const historico=_iaHistorico.slice(-10).map(function(m){
-    return {role:m.role==='model'?'assistant':m.role, content:m.content||''};
-  });
-
-  try{
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.claudeKey},
-      body:JSON.stringify({
-        model:'llama-3.3-70b-versatile',
-        messages:[{role:'system',content:sistemaPrompt},...historico],
-        max_tokens:1024,
-        temperature:0.7
-      })
-    });
-    const d=await r.json();
-    if(d.error){throw new Error(d.error.message||'Erro Groq API');}
-    const resp=d.choices?.[0]?.message?.content||'Sem resposta da IA.';
-    loadDiv.remove();
-    _iaHistorico.push({role:'assistant',content:pergunta});
-    _iaHistorico[_iaHistorico.length-1]={role:'assistant',content:resp};
-    iaAddMsg('assistant',resp);
-  }catch(e){
-    loadDiv.remove();
-    const msg=e.message||'Erro desconhecido';
-    if(msg.includes('401')||msg.includes('invalid_api_key')){
-      iaAddMsg('assistant','❌ Chave Groq inválida. Acesse console.groq.com/keys e crie uma chave válida. É gratuito!');
-    } else {
-      iaAddMsg('assistant','Erro ao conectar: '+msg);
-    }
-  }
-}
-
-// ══════════════════════════════════════════════
-// INIT — chamados no entrarApp
-// ══════════════════════════════════════════════
-function initExtras(){
-  initPWA();
-  initNotificacoes();
-  carregarConfig();
-  initEmailJS();
-  // Carregar feriados do ano atual em background
-  carregarFeriados(new Date().getFullYear()).catch(()=>{});
-  carregarFeriados(new Date().getFullYear()+1).catch(()=>{});
-}
-
-
-// ══════════════════════════════════════════════
-// ASSINATURA DIGITAL — Autentique
-// ══════════════════════════════════════════════
-let _assinDocs=[]; // histórico da sessão
-let _assinArquivo=null; // arquivo PDF selecionado
 
 function renderAssinatura(){
   carregarConfig();
-  // Status bar
   const sb=g('assin-status-bar');
   if(sb){
-    if(cfg.autentiqueToken){
-      sb.innerHTML='<div style="background:var(--green-bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--green-text)">'
-        +'<i class="ti ti-circle-check" style="font-size:16px"></i>'
-        +'<div><strong>Autentique conectado!</strong> Token configurado. Documentos serão enviados via API.</div>'
-        +'</div>';
-    } else {
-      sb.innerHTML='<div style="background:var(--amber-bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--amber-text)">'
-        +'<div><i class="ti ti-alert-triangle"></i> <strong>Autentique não configurado.</strong> Acesse Configurações → Assinatura Digital e cole seu token.</div>'
-        +'<button class="btn" data-go="configuracoes" onclick="go(this.dataset.go,null)" style="white-space:nowrap"><i class="ti ti-settings"></i> Configurar</button>'
-        +'</div>';
-    }
+    sb.innerHTML='<div style="background:var(--blue-bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--blue-text)">'
+      +'<i class="ti ti-info-circle" style="font-size:16px"></i>'
+      +'<div>Fluxo manual: gere/baixe o PDF aqui, depois faça o upload no painel do Autentique.</div>'
+      +'</div>';
   }
-  // Preencher select de clientes — sempre recarrega do db atual
   assinPopularClientes();
-  // Tipo doc toggle
   assinToggleTipo();
-  // Lista documentos
-  assinListarPendentes();
 }
 
 function assinPopularClientes(){
@@ -2956,7 +2728,6 @@ function assinPopularClientes(){
     +db.clientes.map(function(c){
       return '<option value="'+c.id+'"'+(valorAtual===c.id?' selected':'')+'>'+he(c.nome)+'</option>';
     }).join('');
-  // Se não há clientes, mostra aviso
   if(db.clientes.length===0){
     sel.innerHTML='<option value="">Nenhum cliente cadastrado ainda</option>';
   }
@@ -2965,24 +2736,21 @@ function assinPopularClientes(){
 function assinSelecionarCliente(){
   const sel=g('assin-cli');
   if(!sel||!sel.value){
-    // Limpa campos ao desselecionar
     const emailEl=g('assin-email'); if(emailEl)emailEl.value='';
     const nomeDocEl=g('assin-nome-doc'); if(nomeDocEl)nomeDocEl.value='';
-    const wp=g('assin-wa-preview'); if(wp)wp.textContent='';
+    const wp=g('assin-wa-preview'); if(wp)wp.innerHTML='';
+    g('assin-wa-link-area').style.display='none';
     return;
   }
   const c=db.clientes.find(function(x){return x.id===sel.value;});
   if(!c)return;
 
-  // E-mail: preenche se tiver, deixa em branco para preencher manualmente
   const emailEl=g('assin-email');
   if(emailEl){
     emailEl.value=c.email||'';
-    emailEl.placeholder=c.email?'':'Este cliente não tem e-mail — digite aqui';
-    emailEl.style.borderColor=c.email?'':'var(--amber)';
+    emailEl.placeholder=c.email?'':'Digite o e-mail do cliente';
   }
 
-  // Nome do documento automático
   const nomeDocEl=g('assin-nome-doc');
   const tipoSel=g('assin-tipo');
   if(nomeDocEl&&tipoSel){
@@ -2990,14 +2758,14 @@ function assinSelecionarCliente(){
     nomeDocEl.value=(tipos[tipoSel.value]||'Documento')+' — '+c.nome;
   }
 
-  // Preview WhatsApp
   const wp=g('assin-wa-preview');
   if(wp){
     if(c.telefone){
-      wp.innerHTML='Será enviado para: <strong>'+c.telefone+'</strong>';
-      wp.style.color='var(--green-text)';
+      wp.innerHTML='Cliente tem WhatsApp: <strong>'+c.telefone+'</strong>';
+      g('assin-wa-link-area').style.display='block';
     } else {
-      wp.innerHTML='<span style="color:var(--amber-text)">⚠ Cliente sem telefone cadastrado — WhatsApp não será enviado automaticamente.</span>';
+      wp.innerHTML='<span style="color:var(--amber-text)">⚠ Cliente sem telefone cadastrado.</span>';
+      g('assin-wa-link-area').style.display='none';
     }
   }
 }
@@ -3007,7 +2775,6 @@ function assinToggleTipo(){
   const uploadArea=g('assin-upload-area');
   if(!tipo||!uploadArea)return;
   uploadArea.style.display=tipo.value==='upload'?'block':'none';
-  // Atualiza nome doc
   const sel=g('assin-cli');
   if(sel&&sel.value) assinSelecionarCliente();
 }
@@ -3097,143 +2864,49 @@ async function assinGerarPDFInterno(tipo,cliente){
     doc.line(55,y,155,y); y+=6;
     doc.text(cliente.nome,105,y,{align:'center'});
   }
-  return doc.output('arraybuffer');
+  return doc.output('blob');
 }
 
-function porcentPorExtenso(p){
-  const m={'10':'dez','15':'quinze','20':'vinte','25':'vinte e cinco','30':'trinta','35':'trinta e cinco','40':'quarenta'};
-  return m[String(p)]||p;
-}
-
-async function assinEnviar(){
-  carregarConfig();
-  if(!cfg.autentiqueToken){toast('Configure o token do Autentique em Configurações.','err');go('configuracoes',null);return;}
+async function assinBaixarPDF(){
   const sel=g('assin-cli'); if(!sel||!sel.value){toast('Selecione um cliente.','err');return;}
   const c=db.clientes.find(function(x){return x.id===sel.value;});
   if(!c){toast('Cliente não encontrado.','err');return;}
-  const emailEl=g('assin-email');
-  const email=emailEl&&emailEl.value.trim()?emailEl.value.trim():c.email;
-  if(!email){toast('Informe o e-mail do signatário.','err');return;}
   const tipo=g('assin-tipo')?.value||'upload';
-  const nomeDoc=g('assin-nome-doc')?.value.trim()||tipo+' — '+c.nome;
+  const nomeDoc=g('assin-nome-doc')?.value.trim()||tipo+' - '+c.nome;
 
-  showLoading('Preparando documento...');
-  let pdfBuffer=null;
-
+  let blob=null;
   if(tipo==='upload'){
-    if(!_assinArquivo){hideLoading();toast('Selecione um arquivo PDF para enviar.','err');return;}
-    pdfBuffer=await _assinArquivo.arrayBuffer();
+    if(!_assinArquivo){toast('Selecione um arquivo PDF primeiro.','err');return;}
+    blob=_assinArquivo;
   } else {
-    pdfBuffer=await assinGerarPDFInterno(tipo,c);
-    if(!pdfBuffer){hideLoading();return;}
-  }
-
-  // Convert to base64
-  const bytes=new Uint8Array(pdfBuffer);
-  let b64='';
-  for(let i=0;i<bytes.length;i+=1024){
-    b64+=String.fromCharCode.apply(null,bytes.subarray(i,i+1024));
-  }
-  const base64=btoa(b64);
-
-  showLoading('Enviando para o Autentique...');
-
-  const query=`mutation CreateDocument($document: NewDocumentInput!, $signers: [NewSignerInput!]!, $file: Upload!) {
-    createDocument(document: $document, signers: $signers, file: $file) {
-      id name
-      signatures { public_id name email signed { date } link { short_link } }
-    }
-  }`;
-
-  try{
-    // Autentique usa multipart/form-data com GraphQL multipart spec
-    const operations=JSON.stringify({
-      query,
-      variables:{
-        document:{name:nomeDoc},
-        signers:[{email,name:c.nome,action:'SIGN'}],
-        file:null
-      }
-    });
-    const map=JSON.stringify({'0':['variables.file']});
-    const form=new FormData();
-    form.append('operations',operations);
-    form.append('map',map);
-    form.append('0',new Blob([pdfBuffer],{type:'application/pdf'}),nomeDoc.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf');
-
-    // Usa proxy PHP se configurado (necessário para GitHub Pages — resolve CORS)
-    const urlAutentique=cfg.autentiqueProxy||'https://api.autentique.com.br/2/graphql';
-    // Passa token em dois headers para garantir compatibilidade com o proxy PHP
-    const headersAutentique={
-      'Authorization':'Bearer '+cfg.autentiqueToken,
-      'X-Autentique-Token':cfg.autentiqueToken
-    };
-    const r=await fetch(urlAutentique,{
-      method:'POST',
-      headers:headersAutentique,
-      body:form
-    });
-    let d;
-    try{ d=await r.json(); }
-    catch(je){ throw new Error('Proxy retornou resposta inválida (status '+r.status+'). Verifique se o proxy PHP está acessível em: '+urlAutentique); }
-    if(!r.ok){ throw new Error('Proxy HTTP '+r.status+': '+(d?.error||d?.message||JSON.stringify(d))); }
-    if(d.errors&&d.errors.length){ throw new Error('Autentique: '+d.errors[0].message); }
-
-    const docData=d.data?.createDocument;
-    const link=docData?.signatures?.[0]?.link?.short_link||'';
+    showLoading('Gerando documento...');
+    blob=await assinGerarPDFInterno(tipo,c);
     hideLoading();
-
-    // Salvar no histórico
-    _assinDocs.unshift({id:docData?.id,nome:nomeDoc,cliente:c.nome,email,link,data:new Date().toLocaleString('pt-BR'),status:'Aguardando assinatura',telefone:c.telefone||''});
-    assinListarPendentes();
-
-    toast('✓ Documento enviado! Link: '+link,'ok');
-
-    // WhatsApp com link
-    if(c.telefone&&link){
-      const tel=c.telefone.replace(/\D/g,'');
-      var msg='Olá '+c.nome+', segue o link para assinatura do documento: '+nomeDoc+' - '+link+'. Atenciosamente, Dr(a). '+(cfg.nome||'Advogado');
-      window.open('https://wa.me/55'+tel+'?text='+encodeURIComponent(msg),'_blank');
-    }
-
-    assinLimparArquivo();
-    if(g('assin-cli'))g('assin-cli').value='';
-    if(g('assin-email'))g('assin-email').value='';
-    if(g('assin-nome-doc'))g('assin-nome-doc').value='';
-
-  }catch(e){
-    hideLoading();
-    const msg=e.message||'Erro desconhecido';
-    console.error('[Autentique] Erro completo:',e);
-    toast('Erro Autentique: '+msg,'err');
+    if(!blob)return;
   }
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=nomeDoc.replace(/[^a-zA-Z0-9-_ ]/g,'_')+'.pdf';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+
+  toast('PDF baixado! Agora clique em "Abrir no Autentique" para enviar.','ok');
 }
 
-function assinListarPendentes(){
-  const el=g('assin-lista-docs'); if(!el)return;
-  if(!_assinDocs.length){
-    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">'
-      +'<i class="ti ti-file-off" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>'
-      +'Nenhum documento enviado ainda nesta sessão.</div>';
-    return;
-  }
-  el.innerHTML=_assinDocs.map(function(d){
-    const waBtn=d.telefone&&d.link
-      ?('<a href="https://wa.me/55'+d.telefone.replace(/\D/g,'')+'?text='+encodeURIComponent('Olá '+d.cliente+', segue o link para assinatura do documento '+d.nome+': '+d.link)+'" target="_blank" class="btn" style="font-size:10px;padding:4px 8px" title="Reenviar WhatsApp"><i class="ti ti-brand-whatsapp"></i></a>')
-      :'';
-    const linkBtn=d.link
-      ?('<a href="'+d.link+'" target="_blank" class="btn" style="font-size:10px;padding:4px 8px" title="Abrir link de assinatura"><i class="ti ti-external-link"></i></a>')
-      :'';
-    return '<div class="assin-doc-row">'
-      +'<i class="ti ti-file-description" style="font-size:18px;color:var(--blue);flex-shrink:0"></i>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+he(d.nome)+'</div>'
-      +'<div style="font-size:11px;color:var(--text3)">'+he(d.cliente)+' · '+d.email+' · '+d.data+'</div>'
-      +'</div>'
-      +'<span class="assin-status pending">'+d.status+'</span>'
-      +'<div style="display:flex;gap:4px">'+waBtn+linkBtn+'</div>'
-      +'</div>';
-  }).join('');
+function assinEnviarWhatsAppManual(){
+  const sel=g('assin-cli'); if(!sel||!sel.value){toast('Selecione um cliente.','err');return;}
+  const c=db.clientes.find(function(x){return x.id===sel.value;});
+  if(!c||!c.telefone){toast('Cliente sem telefone cadastrado.','err');return;}
+  const nomeDoc=g('assin-nome-doc')?.value.trim()||'documento';
+  const tel=c.telefone.replace(/\D/g,'');
+  const link=prompt('Cole aqui o link de assinatura gerado no Autentique:');
+  if(!link)return;
+  const msg='Olá '+c.nome+', segue o link para assinatura digital do documento "'+nomeDoc+'": '+link;
+  window.open('https://wa.me/55'+tel+'?text='+encodeURIComponent(msg),'_blank');
 }
 
 // ══ ACESSOS ══
