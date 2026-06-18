@@ -763,6 +763,7 @@ tr:hover td{background:var(--bg3)}
   <div class="cfg-s"><div class="cfg-t"><i class="ti ti-writing-sign"></i> Autentique — Assinatura Digital</div>
     <div style="background:var(--blue-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)"><i class="ti ti-info-circle"></i> Acesse <a href="https://autentique.com.br" target="_blank" style="color:var(--blue);font-weight:600">autentique.com.br</a> → Configurações → Integrações → Copie seu token de API.</div>
     <div class="fg"><label class="fl">Token de API</label><input class="fi" id="cfg-autentique" placeholder="seu-token-aqui" type="password"></div>
+    <div class="fg"><label class="fl">URL do Proxy PHP <span style="font-size:10px;color:var(--text3)">(opcional — necessário para GitHub Pages)</span></label><input class="fi" id="cfg-autentique-proxy" placeholder="https://organizacrm.online/autentique-proxy.php"></div>
   </div>
   <div class="cfg-s"><div class="cfg-t"><i class="ti ti-robot"></i> Groq IA — Assistente Jurídico (Gratuito)</div>
     <div style="background:var(--green-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--green-text)"><i class="ti ti-check"></i> <strong>100% gratuito!</strong> Acesse <a href="https://console.groq.com/keys" target="_blank" style="color:var(--green);font-weight:600">console.groq.com/keys</a> → faça login com Google → "Create API Key" → cole aqui. Sem cartão, sem faturamento.</div>
@@ -834,7 +835,7 @@ let gToken='', gUser='', sheetId='', MASTER_SHEET_ID='';
 let modalType='', mEditId=null, _modalAcesso=false, _saving=false;
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 let tipoDocAtual='padrao', pdfArquivo=null, mergeArquivos=[];
-let cfg={nome:'',oab:'',nac:'brasileiro(a)',civil:'solteiro(a)',end:'',cidade:'',uf:'GO',cep:'',wpp:'',email:'',site:'',honor:'30',foro:'',pdfPub:'',pdfSec:'',ejsService:'',ejsKey:'',ejsTplCob:'',ejsTplLem:'',autentiqueToken:'',claudeKey:''};
+let cfg={nome:'',oab:'',nac:'brasileiro(a)',civil:'solteiro(a)',end:'',cidade:'',uf:'GO',cep:'',wpp:'',email:'',site:'',honor:'30',foro:'',pdfPub:'',pdfSec:'',ejsService:'',ejsKey:'',ejsTplCob:'',ejsTplLem:'',autentiqueToken:'',claudeKey:'',autentiqueProxy:''};
 let db={clientes:[],processos:[],tarefas:[],financeiro:[],leads:[],eventos:[],kbProc:[],kbPrazos:[]};
 
 // ══ LOADING ══
@@ -1244,10 +1245,11 @@ function carregarConfig(){
   const ejsc=g('cfg-ejs-tpl-cob'); if(ejsc)ejsc.value=cfg.ejsTplCob||'';
   const ejsl=g('cfg-ejs-tpl-lem'); if(ejsl)ejsl.value=cfg.ejsTplLem||'';
   const autq=g('cfg-autentique'); if(autq)autq.value=cfg.autentiqueToken||'';
+  const autqp=g('cfg-autentique-proxy'); if(autqp)autqp.value=cfg.autentiqueProxy||'';
   const clk=g('cfg-claude-key'); if(clk)clk.value=cfg.claudeKey||'';
 }
 function salvarConfig(){
-  cfg={nome:g('cfg-nome').value.trim(),oab:g('cfg-oab').value.trim(),nac:g('cfg-nac').value.trim(),civil:g('cfg-civil').value,end:g('cfg-end').value.trim(),cidade:g('cfg-cidade').value.trim(),uf:g('cfg-uf').value.trim(),cep:g('cfg-cep').value.trim(),wpp:g('cfg-wpp').value.trim(),email:g('cfg-email').value.trim(),site:g('cfg-site').value.trim(),honor:g('cfg-honor').value.trim()||'30',foro:g('cfg-foro').value.trim(),pdfPub:g('cfg-pdf-pub').value.trim(),pdfSec:g('cfg-pdf-sec').value.trim(),ejsService:g('cfg-ejs-service')?.value.trim()||'',ejsKey:g('cfg-ejs-key')?.value.trim()||'',ejsTplCob:g('cfg-ejs-tpl-cob')?.value.trim()||'',ejsTplLem:g('cfg-ejs-tpl-lem')?.value.trim()||'',autentiqueToken:g('cfg-autentique')?.value.trim()||'',claudeKey:g('cfg-claude-key')?.value.trim()||''};
+  cfg={nome:g('cfg-nome').value.trim(),oab:g('cfg-oab').value.trim(),nac:g('cfg-nac').value.trim(),civil:g('cfg-civil').value,end:g('cfg-end').value.trim(),cidade:g('cfg-cidade').value.trim(),uf:g('cfg-uf').value.trim(),cep:g('cfg-cep').value.trim(),wpp:g('cfg-wpp').value.trim(),email:g('cfg-email').value.trim(),site:g('cfg-site').value.trim(),honor:g('cfg-honor').value.trim()||'30',foro:g('cfg-foro').value.trim(),pdfPub:g('cfg-pdf-pub').value.trim(),pdfSec:g('cfg-pdf-sec').value.trim(),ejsService:g('cfg-ejs-service')?.value.trim()||'',ejsKey:g('cfg-ejs-key')?.value.trim()||'',ejsTplCob:g('cfg-ejs-tpl-cob')?.value.trim()||'',ejsTplLem:g('cfg-ejs-tpl-lem')?.value.trim()||'',autentiqueToken:g('cfg-autentique')?.value.trim()||'',claudeKey:g('cfg-claude-key')?.value.trim()||'',autentiqueProxy:g('cfg-autentique-proxy')?.value.trim()||''};
   localStorage.setItem(LS_CFG,JSON.stringify(cfg));
   toast('Configurações salvas!','ok');
 }
@@ -3081,9 +3083,13 @@ async function assinEnviar(){
     form.append('map',map);
     form.append('0',new Blob([pdfBuffer],{type:'application/pdf'}),nomeDoc.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf');
 
-    const r=await fetch('https://api.autentique.com.br/2/graphql',{
+    // Usa proxy PHP se configurado (necessário para GitHub Pages — resolve CORS)
+    const urlAutentique=cfg.autentiqueProxy||'https://api.autentique.com.br/2/graphql';
+    const headersAutentique={Authorization:'Bearer '+cfg.autentiqueToken};
+    // Se usando proxy, o token vai no header mas o proxy repassa ao Autentique
+    const r=await fetch(urlAutentique,{
       method:'POST',
-      headers:{Authorization:'Bearer '+cfg.autentiqueToken},
+      headers:headersAutentique,
       body:form
     });
     const d=await r.json();
