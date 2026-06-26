@@ -550,7 +550,7 @@ html[data-theme="dark"] .cev.processo{background:rgba(255,51,102,0.2);color:var(
 <div class="panel" id="p-contatos">
   <div style="background:var(--green-bg);border:1px solid #bbf7d0;border-radius:var(--rl);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--green-text)">
     <i class="ti ti-brand-whatsapp" style="font-size:20px;flex-shrink:0"></i>
-    <div>Contatos que chegam via <strong>WhatsApp</strong> pelo <strong>AutoResponder</strong> são salvos aqui automaticamente com stage <em>Novo</em>. Avance manualmente até virarem clientes.</div>
+    <div>Contatos que chegam via <strong>WhatsApp</strong> pelo <strong>AutoResponder</strong> são salvos aqui com stage <em>Novo</em>. Avance manualmente até virarem clientes.</div>
     <button class="btn btn-p" style="margin-left:auto;white-space:nowrap;flex-shrink:0" onclick="openNewContato('Novo')"><i class="ti ti-plus"></i> Novo</button>
   </div>
   <div class="kb-cols" id="cols-contatos" style="min-height:300px"></div>
@@ -1271,7 +1271,7 @@ const ABA_KEYS={
   KbProc:   'id,titulo,cliente,numero,fase,prazo,prioridade,obs,resp'.split(','),
   KbPrazos: 'id,titulo,cliente,prazo,status,wip,obs,resp'.split(','),
   Advogados:'id,nome,oab,nac,civil,end,cidade,uf,cep,wpp,email,site,honor,foro,principal'.split(','),
-  Contatos: 'id,nome,telefone,email,data,hora,area,stage,mensagem'.split(',')
+  Contatos:'id,nome,telefone,email,data,hora,area,stage,mensagem'.split(',')
 };
 const ABA_DB={Clientes:'clientes',Processos:'processos',Tarefas:'tarefas',Financeiro:'financeiro',Leads:'leads',Eventos:'eventos',KbProc:'kbProc',KbPrazos:'kbPrazos',Advogados:'advogados',Contatos:'contatos'};
 
@@ -1989,90 +1989,54 @@ async function kbSalvarModal(){
   toast('Salvo! ✓','ok');
 }
 
-// ══ CONTATOS WhatsApp ══
-const CT_STAGES=[
-  {id:'Novo',     label:'🆕 Novo',       cor:'var(--blue-text)',  bg:'var(--blue-bg)'},
-  {id:'Em Análise',label:'🔍 Em Análise', cor:'var(--amber-text)', bg:'var(--amber-bg)'},
-  {id:'Negociação',label:'💬 Negociação', cor:'var(--purple-text)',bg:'var(--purple-bg)'},
-  {id:'Contrato', label:'📝 Contrato',    cor:'var(--red-text)',   bg:'var(--red-bg)'},
-  {id:'Cliente',  label:'✅ Cliente',     cor:'var(--green-text)', bg:'var(--green-bg)'}
-];
 
+// ══ CONTATOS WhatsApp (AutoResponder) ══
+const CT_STAGES=[
+  {id:'Novo',       label:'🆕 Novo',       cor:'var(--blue-text)'},
+  {id:'Em Análise', label:'🔍 Em Análise', cor:'var(--amber-text)'},
+  {id:'Negociação', label:'💬 Negociação', cor:'var(--purple-text)'},
+  {id:'Contrato',   label:'📝 Contrato',   cor:'var(--red-text)'},
+  {id:'Cliente',    label:'✅ Cliente',    cor:'var(--green-text)'}
+];
 function renderContatos(){
-  if(!db.contatos) db.contatos=[];
+  if(!db.contatos)db.contatos=[];
   const total=db.contatos.length;
   const badge=g('badge-cwa');
   if(badge){badge.textContent=total||'';badge.style.display=total?'':'none';}
-  const wrap=g('cols-contatos'); if(!wrap)return;
+  const wrap=g('cols-contatos');if(!wrap)return;
   wrap.innerHTML='';
   CT_STAGES.forEach(st=>{
     const cards=db.contatos.filter(c=>(c.stage||'Novo')===st.id);
-    const col=document.createElement('div');
-    col.className='kb-col';
-    col.innerHTML=`
-      <div class="kb-col-h">
-        <span class="kb-col-title" style="color:${st.cor}">${st.label}</span>
-        <span class="kb-col-cnt">${cards.length}</span>
-      </div>
-      <div class="kb-cards" id="ct-col-${st.id.replace(/\s/g,'_')}">
-        ${cards.map(c=>ctCard(c)).join('')}
-      </div>`;
+    const col=document.createElement('div');col.className='kb-col';
+    col.innerHTML=`<div class="kb-col-h"><span class="kb-col-title" style="color:${st.cor}">${st.label}</span><span class="kb-col-cnt">${cards.length}</span></div><div class="kb-cards">${cards.map(c=>ctCard(c)).join('')}</div>`;
     wrap.appendChild(col);
   });
 }
-
 function ctCard(c){
   const tel=c.telefone||'';
-  const waLink=tel?`<a href="https://wa.me/55${tel.replace(/\D/g,'')}" target="_blank" style="color:var(--green-text);text-decoration:none"><i class="ti ti-brand-whatsapp"></i></a>`:'';
-  const stageOpts=CT_STAGES.map(s=>`<option value="${s.id}"${s.id===c.stage?'selected':''}>${s.label}</option>`).join('');
-  return `<div class="kb-card">
-    <div class="kb-card-title">${c.nome||'Sem nome'} ${waLink}</div>
-    <div class="kb-card-sub">${tel} ${c.area?'· '+c.area:''}</div>
-    ${c.mensagem?`<div style="font-size:10px;color:var(--text3);margin-bottom:6px;font-style:italic">"${(c.mensagem||'').slice(0,60)}${(c.mensagem||'').length>60?'…':''}"</div>`:''}
-    <div style="display:flex;gap:4px;align-items:center;margin-top:4px">
-      <select style="flex:1;font-size:10px;padding:3px 4px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text)" onchange="ctMoveStage('${c.id}',this.value)">${stageOpts}</select>
-      ${c.stage==='Cliente'?`<button class="btn btn-sm" style="font-size:10px;padding:2px 6px" onclick="ctConverterCliente('${c.id}')"><i class="ti ti-arrow-right"></i></button>`:''}
-      <button class="btn btn-sm" style="font-size:10px;padding:2px 6px;color:var(--red-text)" onclick="ctExcluir('${c.id}')"><i class="ti ti-trash"></i></button>
-    </div>
-  </div>`;
+  const wa=tel?`<a href="https://wa.me/55${tel.replace(/\D/g,'')}" target="_blank" style="color:var(--green-text);text-decoration:none"><i class="ti ti-brand-whatsapp"></i></a>`:'';
+  const opts=CT_STAGES.map(s=>`<option value="${s.id}"${s.id===c.stage?' selected':''}>${s.label}</option>`).join('');
+  return `<div class="kb-card"><div class="kb-card-title">${c.nome||'Sem nome'} ${wa}</div><div class="kb-card-sub">${tel}${c.area?' · '+c.area:''}</div>${c.mensagem?`<div style="font-size:10px;color:var(--text3);margin:4px 0;font-style:italic">"${(c.mensagem).slice(0,60)}${c.mensagem.length>60?'…':''}"</div>`:''}<div style="display:flex;gap:4px;margin-top:6px"><select style="flex:1;font-size:10px;padding:3px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text)" onchange="ctMoveStage('${c.id}',this.value)">${opts}</select>${c.stage==='Cliente'?`<button class="btn btn-sm" style="font-size:10px;padding:2px 6px" onclick="ctConverterCliente('${c.id}')"><i class="ti ti-arrow-right"></i></button>`:''}<button class="btn btn-sm" style="font-size:10px;padding:2px 6px;color:var(--red-text)" onclick="ctExcluir('${c.id}')"><i class="ti ti-trash"></i></button></div></div>`;
 }
-
-function ctMoveStage(id,novoStage){
-  const c=db.contatos.find(x=>x.id===id); if(!c)return;
-  c.stage=novoStage;
-  salvarContatos().then(()=>renderContatos());
-}
-
-function ctExcluir(id){
-  if(!confirm('Excluir este contato?'))return;
-  db.contatos=db.contatos.filter(x=>x.id!==id);
-  salvarContatos().then(()=>renderContatos());
-}
-
+function ctMoveStage(id,s){const c=db.contatos.find(x=>x.id===id);if(!c)return;c.stage=s;salvarContatos().then(()=>renderContatos());}
+function ctExcluir(id){if(!confirm('Excluir?'))return;db.contatos=db.contatos.filter(x=>x.id!==id);salvarContatos().then(()=>renderContatos());}
 function ctConverterCliente(id){
-  const c=db.contatos.find(x=>x.id===id); if(!c)return;
-  const novo={id:genId(),nome:c.nome||'',cpf:'',nascimento:'',rg:'',telefone:c.telefone||'',email:c.email||'',profissao:'',estadoCivil:'',rua:'',bairro:'',cep:'',cidade:'',estado:'GO',area:c.area||'',status:'ativo',obs:'Origem: WhatsApp (AutoResponder)',driveFolderId:''};
-  db.clientes.push(novo);
+  const c=db.contatos.find(x=>x.id===id);if(!c)return;
+  db.clientes.push({id:genId(),nome:c.nome||'',cpf:'',nascimento:'',rg:'',telefone:c.telefone||'',email:c.email||'',profissao:'',estadoCivil:'',rua:'',bairro:'',cep:'',cidade:'',estado:'GO',area:c.area||'',status:'ativo',obs:'Origem: WhatsApp (AutoResponder)',driveFolderId:''});
   db.contatos=db.contatos.filter(x=>x.id!==id);
-  Promise.all([salvarClientes(),salvarContatos()]).then(()=>{ renderAll(); toast(c.nome+' convertido(a) em cliente! ✓','ok'); });
+  Promise.all([salvarClientes(),salvarContatos()]).then(()=>{renderAll();toast(c.nome+' convertido(a) em cliente! ✓','ok');});
 }
-
 function openNewContato(stage){
-  const nome=prompt('Nome do contato:','');
-  if(nome===null)return;
-  const tel=prompt('Telefone (WhatsApp):','');
-  if(tel===null)return;
-  const area=prompt('Área (ex: Previdenciário):','Previdenciário');
-  const novo={id:genId(),nome:nome.trim(),telefone:(tel||'').trim(),email:'',data:new Date().toLocaleDateString('pt-BR'),hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),area:(area||'').trim(),stage:stage||'Novo',mensagem:''};
-  db.contatos.push(novo);
+  const nome=prompt('Nome do contato:','');if(nome===null)return;
+  const tel=prompt('Telefone (WhatsApp):','');if(tel===null)return;
+  const area=prompt('Área:','Previdenciário');
+  db.contatos.push({id:genId(),nome:nome.trim(),telefone:(tel||'').trim(),email:'',data:new Date().toLocaleDateString('pt-BR'),hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),area:(area||'').trim(),stage:stage||'Novo',mensagem:''});
   salvarContatos().then(()=>renderContatos());
 }
-
 async function salvarContatos(){
-  if(!db.contatos) db.contatos=[];
-  salvarLocal();
+  if(!db.contatos)db.contatos=[];salvarLocal();
   if(!gToken||!sheetId)return;
-  try{ await salvarAba('Contatos', db.contatos); } catch(e){ console.warn('salvarContatos erro:',e); }
+  try{await salvarAba('Contatos',db.contatos);}catch(e){console.warn(e);}
 }
 
 function renderDrive(){
