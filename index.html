@@ -1019,6 +1019,7 @@ function loginGoogle(){
       gToken=r.access_token;
       const expMs=(r.expires_in||3600)*1000;
       localStorage.setItem(LS_TEXP, Date.now()+expMs);
+      localStorage.setItem('__ar_gtoken', gToken);
 
       // Agenda próxima renovação automática 5 minutos antes de expirar
       agendarRenovacaoToken(expMs);
@@ -1045,7 +1046,7 @@ function loginGoogle(){
         } else {
           const ok=await verificarAcesso(gUser);
           if(!ok){
-            gToken=''; gUser=''; localStorage.removeItem(LS_USER); hideLoading();
+            gToken=''; gUser=''; localStorage.removeItem(LS_USER); localStorage.removeItem('__ar_gtoken'); hideLoading();
             g('login-msg').innerHTML='<div class="blocked"><strong>Acesso não autorizado.</strong><br>Seu e-mail não tem permissão de acesso.<br>Entre em contato com o administrador.</div>';
             return;
           }
@@ -1078,6 +1079,7 @@ function renovarTokenSilencioso(){
         if(r.error){console.warn('[Auth] Falha na renovação silenciosa:',r.error);mostrarAvisoReconectar();return;}
         gToken=r.access_token;
         localStorage.setItem(LS_TEXP,Date.now()+(r.expires_in||3600)*1000);
+        localStorage.setItem('__ar_gtoken', gToken);
         agendarRenovacaoToken((r.expires_in||3600)*1000);
         console.log('[Auth] Token renovado ✓');
       }
@@ -1123,6 +1125,7 @@ async function reconectarGoogle(){
         if(r.error){toast('Erro ao reconectar. Faça login novamente.','err');return;}
         gToken=r.access_token;
         localStorage.setItem(LS_TEXP,Date.now()+(r.expires_in||3600)*1000);
+        localStorage.setItem('__ar_gtoken', gToken);
         agendarRenovacaoToken((r.expires_in||3600)*1000);
         toast('Reconectado! ✓','ok');
       }
@@ -1220,7 +1223,7 @@ function doLogout(){
   g('app').classList.remove('visible');
   g('login-screen').style.display='flex';
   g('login-msg').innerHTML='';
-  gToken=''; gUser=''; sheetId='';
+  gToken=''; gUser=''; sheetId=''; localStorage.removeItem('__ar_gtoken');
   localStorage.removeItem(LS_USER);
   g('nav-acessos').style.display='none';
   atualizarPills();
@@ -3448,6 +3451,7 @@ function copiarLink(){
             }
             gToken=r.access_token;
             localStorage.setItem(LS_TEXP,Date.now()+(r.expires_in||3600)*1000);
+            localStorage.setItem('__ar_gtoken', gToken);
             atualizarPills();
             try{
               showLoading('Sincronizando dados...');
